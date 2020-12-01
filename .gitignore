@@ -1,0 +1,4 @@
+.stack-work/
+*~
+src/Cookie.hs
+inputs/*
