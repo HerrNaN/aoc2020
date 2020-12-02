@@ -1,6 +1,7 @@
 module Main where
 
 import qualified Day01 as D01 
+import qualified Day02 as D02
 import Input
 
 
@@ -15,6 +16,7 @@ main = mapM_ printSolution solutions
 solutions :: [(Int, String -> String, String -> String)]
 solutions = [
               (1, show . D01.solveA, show . D01.solveB)
+             ,(2, show . D02.solveA, show . D02.solveB)
              -- (1, show . day01a, show . day01b)
              ]
 
