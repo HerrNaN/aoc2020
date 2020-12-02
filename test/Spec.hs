@@ -1,7 +1,8 @@
 module Main where
 
 import Test.Hspec
-import Day01
+import qualified Day01 as D01
+import qualified Day02 as D02
 
 
 main :: IO ()
@@ -17,7 +18,10 @@ main = hspec $ describe "Advent of Code 2020" $ mapM_ testSolution tests
   )
 -}
 tests :: [(Int, (String -> String, String), (String -> String, String))]
-tests = []
+tests = [
+          (1, (show . D01.solveA, "514579"), (show . D01.solveB, "241861950"))
+         ,(2, (show . D02.solveA, "2"     ), (show . D02.solveB, "1"        ))
+        ]
 
 -- | Runs the tests a given entry in the tests list.
 testSolution :: (Int, (String -> String, String), (String -> String, String)) -> Spec
@@ -32,5 +36,5 @@ testSolution (n, (partA, ansA), (partB, ansB)) =
 
 -- | Reads the example input for a given day.
 readEx :: Int -> IO String
-readEx day = readFile $ "examples/day" ++ day' ++ ".txt"
-    where day' = if day < 10 then "0" ++ show day else show day
+readEx day | day < 10  = readFile $ "examples/0" ++ show day ++ ".txt"
+           | otherwise = readFile $ "examples/"  ++ show day ++ ".txt"

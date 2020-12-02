@@ -4,26 +4,38 @@ import qualified Day01 as D01
 import qualified Day02 as D02
 import Input
 
+type DayNumber = Int
+type Solution = String -> String
+type Day = (DayNumber, Solution, Solution)
+type Year = (Int, [Day])
 
 main :: IO ()
-main = mapM_ printSolution solutions
+main = mapM_ printYear years
+
+years :: [Year]
+years = [(2020, days2020)]
+
+printYear :: Year -> IO ()
+printYear (year, days) = do
+    putStrLn $ "Year " ++ show year
+    let dropLast xs = take (length xs - 1) xs
+    mapM_ (\d -> putStr " ├ " >> printDay " │ " d) $ dropLast days
+    putStr " └ "
+    printDay "   " $ last days
 
 {-|
   The solutions, ready to run with the input. The format 
   is as follows:
   (DayNumber, solution A, solution B)
 -}
-solutions :: [(Int, String -> String, String -> String)]
-solutions = [
-              (1, show . D01.solveA, show . D01.solveB)
-             ,(2, show . D02.solveA, show . D02.solveB)
-             -- (1, show . day01a, show . day01b)
-             ]
+days2020 :: [Day]
+days2020 = [ (1, show . D01.solveA, show . D01.solveB),
+             (2, show . D02.solveA, show . D02.solveB)  ]
 
 -- | Formats the solution outputs for a given day in a nice way.
-printSolution :: (Int, String -> String, String -> String) -> IO ()
-printSolution (day, partA, partB) = do
-                    input <- getInput day
-                    putStrLn $ "Day " ++ show day
-                    putStrLn $ "  Part A: " ++ partA input
-                    putStrLn $ "  Part B: " ++ partB input
+printDay :: String -> Day -> IO ()
+printDay prefix (day, solvePartA, solvePartB) = do
+    input <- getInput day
+    putStrLn $           "Day "        ++ show day
+    putStrLn $ prefix ++ " ├ Part A: " ++ solvePartA input
+    putStrLn $ prefix ++ " └ Part B: " ++ solvePartB input
