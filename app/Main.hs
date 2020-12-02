@@ -1,18 +1,20 @@
 module Main where
 
-import Lib
+import Day01
+import Input
+
 
 main :: IO ()
-main = someFunc
--- main = mapM_ printSolution solutions
+main = mapM_ printSolution solutions
 
 {-|
   The solutions, ready to run with the input. The format 
   is as follows:
-  (Day, solution A, solution B)
+  (DayNumber, solution A, solution B)
 -}
 solutions :: [(Int, String -> String, String -> String)]
 solutions = [
+              (1, show . solveA, show . solveB)
              -- (1, show . day01a, show . day01b)
              ]
 
@@ -23,8 +25,3 @@ printSolution (day, partA, partB) = do
                     putStrLn $ "Day " ++ show day
                     putStrLn $ "  Part A: " ++ partA input
                     putStrLn $ "  Part B: " ++ partB input
-
--- | Reads the input for a given day.
-getInput :: Int -> IO String
-getInput n | n < 10    = readFile $ "inputs/day0" ++ show n ++ ".txt"
-           | otherwise = readFile $ "inputs/day" ++ show n ++ ".txt"

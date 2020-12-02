@@ -1,6 +1,7 @@
 module Main where
 
 import Test.Hspec
+import Day01
 
 
 main :: IO ()

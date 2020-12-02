@@ -1,7 +1,7 @@
 {-# LANGUAGE LambdaCase #-}
 module Input(
     getInput,
-    getInputAsIntList
+    inputAsInts
 ) where
 
 import Cookie ( cookie )
@@ -11,13 +11,8 @@ import Data.ByteString.Lazy.UTF8 (ByteString, toString)
 import System.Directory ( doesFileExist )
 
 
-getInputAsIntList :: Int -> IO [Int]
-getInputAsIntList n = do
-    input <- getInput n
-    return $ stringAsIntList input
-
-stringAsIntList :: String -> [Int]
-stringAsIntList s = map (read :: String -> Int) $ lines s
+inputAsInts :: String -> [Int]
+inputAsInts input = map (read :: String -> Int) $ lines input
 
 getInput :: Int -> IO String
 getInput n = doesFileExist file >>= \case 
