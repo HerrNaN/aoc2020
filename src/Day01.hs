@@ -1,9 +1,9 @@
 module Day01 where
 
-import Input
+import Parse
 
 solveA :: String -> Int
-solveA = solveA' . inputAsInts
+solveA = solveA' . dayInput
 
 solveA' :: [Int] -> Int
 solveA' xs = x * y
@@ -12,7 +12,7 @@ solveA' xs = x * y
                                  a+b==2020]
 
 solveB :: String -> Int
-solveB = solveB' . inputAsInts
+solveB = solveB' . dayInput
 
 solveB' :: [Int] -> Int
 solveB' xs = x * y * z
@@ -20,3 +20,8 @@ solveB' xs = x * y * z
                                       b <- xs,
                                       c <- xs,
                                       a+b+c==2020]
+
+dayInput :: String -> [Int]
+dayInput input = case parse (parseLines1 parseInt) input of
+    Right db -> db
+    Left e -> error $ show e
