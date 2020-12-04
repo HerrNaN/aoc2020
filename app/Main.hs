@@ -3,6 +3,7 @@ module Main where
 import qualified Day01 as D01 
 import qualified Day02 as D02
 import qualified Day03 as D03
+import qualified Day04 as D04
 import Input
 
 type DayNumber = Int
@@ -32,7 +33,8 @@ printYear (year, days) = do
 days2020 :: [Day]
 days2020 = [ (1, show . D01.solveA, show . D01.solveB),
              (2, show . D02.solveA, show . D02.solveB),
-             (3, show . D03.solveA, show . D03.solveB)  ]
+             (3, show . D03.solveA, show . D03.solveB),
+             (4, show . D04.solveA, show . D04.solveB)  ]
 
 -- | Formats the solution outputs for a given day in a nice way.
 printDay :: String -> Day -> IO ()

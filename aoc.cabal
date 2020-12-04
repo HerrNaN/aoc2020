@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 315a36653ad1358093f356e34644996deefc0e4da0485a5d60d1bef0da448c3e
+-- hash: ff49c84e2f48fd7ad554d518a95d0eb5235134059609d71e2a81b7bbe386e633
 
 name:           aoc
 version:        0.1.0.0
@@ -24,6 +24,8 @@ library
       Cookie
       Day01
       Day02
+      Day03
+      Day04
       Input
       Parse
   other-modules:
@@ -47,6 +49,8 @@ executable aoc-exe
       Cookie
       Day01
       Day02
+      Day03
+      Day04
       Input
       Parse
       Paths_aoc
@@ -73,6 +77,8 @@ test-suite aoc-test
       Cookie
       Day01
       Day02
+      Day03
+      Day04
       Input
       Parse
       Paths_aoc
