@@ -16,37 +16,18 @@ solveB :: String -> Int
 solveB = solveB' . dayInput
 
 solveB' :: [Pass] -> Int
-solveB' ps = case  missing . sort $ map passID ps of
-            Just x -> x
-            Nothing -> -1
+solveB' ps = missing . sort $ map passID ps
 
-missing :: [Int] -> Maybe Int
-missing []  = Nothing
-missing [_] = Nothing
-missing (x:y:xs) | y - x /= 1 = Just $ x+1
+missing :: [Int] -> Int
+missing []  = -1
+missing [_] = -1
+missing (x:y:xs) | y - x /= 1 = x+1
                  | otherwise  = missing (y:xs)
-rows :: (Int, Int)
-rows = (0,7)
-
-cols :: (Int, Int)
-cols = (0,127)
-
-front :: (Int, Int) -> (Int, Int)
-front range = keep range Low
-
-back :: (Int, Int) -> (Int, Int)
-back range = keep range High
-
-left :: (Int, Int) -> (Int, Int)
-left range = keep range Low
-
-right :: (Int, Int) -> (Int, Int)
-right range = keep range High
 
 passID :: Pass -> Int
-passID (cs, rs) = col * 8 + row
-    where (row, _) = foldl keep rows rs 
-          (col, _) = foldl keep cols cs
+passID (rs, cs) = row * 8 + col
+    where (row, _) = foldl keep (0,127) rs 
+          (col, _) = foldl keep (0,7)   cs
 
 
 data Side = High | Low deriving (Show,Eq)
@@ -59,24 +40,18 @@ keep (n,m) s | s == High = (n+d, m  )
 
 
 dayInput :: String -> [Pass]
-dayInput input = case parse parsePasses input of
+dayInput input = case parse passes input of
     Right ps -> ps
-    Left e -> error $ show e
+    Left  e  -> error $ show e
 
-parsePasses :: Parsec String () [Pass]
-parsePasses = sepEndBy1 parsePass newline
+passes :: Parsec String () [Pass]
+passes = sepEndBy1 pass newline
 
-parsePass :: Parsec String () Pass
-parsePass = (,) <$> parseCols <*> parseRows
+pass :: Parsec String () Pass
+pass = (,) <$> rows <*> cols
 
-parseCols :: Parsec String () [Side]
-parseCols = count 7 parseCol
+rows :: Parsec String () [Side]
+rows = count 7 $ (char 'F' $> Low) <|> (char 'B' $> High)
 
-parseRows :: Parsec String () [Side]
-parseRows = count 3 parseRow
-
-parseCol :: Parsec String () Side
-parseCol = (char 'F' $> Low) <|> (char 'B' $> High)
-
-parseRow :: Parsec String () Side
-parseRow = (char 'L' $> Low) <|> (char 'R' $> High)
+cols :: Parsec String () [Side]
+cols = count 3 $ (char 'L' $> Low) <|> (char 'R' $> High)
