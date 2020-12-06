@@ -27,6 +27,7 @@ dependencies:
 - directory
 - split
 - parsec
+- containers
 
 library:
   source-dirs: src

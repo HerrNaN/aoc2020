@@ -5,6 +5,7 @@ import qualified Day02 as D02
 import qualified Day03 as D03
 import qualified Day04 as D04
 import qualified Day05 as D05
+import qualified Day06 as D06
 import Input
 
 type DayNumber = Int
@@ -37,6 +38,7 @@ days2020 = [  (1, show . D01.solveA, show . D01.solveB)
              ,(3, show . D03.solveA, show . D03.solveB)
              ,(4, show . D04.solveA, show . D04.solveB)
              ,(5, show . D05.solveA, show . D05.solveB)
+             ,(6, show . D06.solveA, show . D06.solveB)
              ]
 
 -- | Formats the solution outputs for a given day in a nice way.

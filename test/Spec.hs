@@ -6,6 +6,7 @@ import qualified Day02 as D02
 import qualified Day03 as D03
 import qualified Day04 as D04
 import qualified Day05 as D05
+import qualified Day06 as D06
 import Input
 
 
@@ -26,8 +27,9 @@ tests = [
           (1, (show . D01.solveA, "514579"), (show . D01.solveB, "241861950"))
          ,(2, (show . D02.solveA, "2"     ), (show . D02.solveB, "1"        ))
          ,(3, (show . D03.solveA, "7"     ), (show . D03.solveB, "336"      ))
-         ,(4, (show . D04.solveA, "2"     ), (show . D04.solveB, ""         ))
-         ,(5, (show . D05.solveA, "820"   ), (show . D05.solveB, ""         ))
+         ,(4, (show . D04.solveA, "2"     ), (show . D04.solveB, "2"        ))
+         ,(5, (show . D05.solveA, "820"   ), (noTest           , "NO TEST"  ))
+         ,(6, (show . D06.solveA, "11"    ), (show . D06.solveB, "6"         ))
         ]
 
 -- | Runs the tests a given entry in the tests list.
@@ -45,3 +47,6 @@ testSolution (n, (partA, ansA), (partB, ansB)) =
 readEx :: Int -> IO String
 readEx day | day < 10  = readFile $ "examples/0" ++ show day ++ ".txt"
            | otherwise = readFile $ "examples/"  ++ show day ++ ".txt"
+
+noTest :: String -> String
+noTest _ = "NO TEST"
