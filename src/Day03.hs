@@ -9,17 +9,17 @@ data Point = Tree | None
     deriving Eq
 type Forest = [[Point]]
 
-solveA :: String -> Int
-solveA = solveA' . dayInput
+day03a :: String -> Int
+day03a = solveA . dayInput
 
-solveA' :: Forest -> Int
-solveA' pss = treesOnSlope pss (3,1)
+solveA :: Forest -> Int
+solveA pss = treesOnSlope pss (3,1)
 
-solveB :: String -> Int
-solveB = solveB' . dayInput
+day03b :: String -> Int
+day03b = solveB . dayInput
 
-solveB' :: Forest -> Int
-solveB' pss = product trees
+solveB :: Forest -> Int
+solveB pss = product trees
     where trees  = map (treesOnSlope pss) slopes
           slopes = [(1,1), (3,1), (5,1), (7,1), (1,2)]
 

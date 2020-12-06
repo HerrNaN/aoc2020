@@ -1,17 +1,16 @@
-{-# LANGUAGE FlexibleContexts #-}
 module DayXX where
 
-solveA :: String -> Int
-solveA = solveA' . dayInput
+dayXXa :: String -> b
+dayXXa = solveA . dayInput
 
-solveA' :: a -> Int
-solveA' = error "not implemented"
+solveA :: a -> b
+solveA = error "not implemented"
 
-solveB :: String -> Int
-solveB = solveB' . dayInput
+dayXXb :: String -> b
+dayXXb = solveB . dayInput
 
-solveB' :: a -> Int
-solveB' = error "not implemented"
+solveB :: a -> b
+solveB = error "not implemented"
 
 dayInput :: String -> a
 dayInput = error "not implemented"

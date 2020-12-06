@@ -28,6 +28,7 @@ dependencies:
 - split
 - parsec
 - containers
+- advent-of-code-api
 
 library:
   source-dirs: src

@@ -6,17 +6,17 @@ import Parse ( parse )
 import Data.Functor (($>))
 import Data.List (sort)
 
-solveA :: String -> Int
-solveA = solveA' . dayInput
+day05a :: String -> Int
+day05a = solveA . dayInput
 
-solveA' :: [Pass] -> Int
-solveA' = maximum . map passID
+solveA :: [Pass] -> Int
+solveA = maximum . map passID
 
-solveB :: String -> Int
-solveB = solveB' . dayInput
+day05b :: String -> Int
+day05b = solveB . dayInput
 
-solveB' :: [Pass] -> Int
-solveB' ps = missing . sort $ map passID ps
+solveB :: [Pass] -> Int
+solveB ps = missing . sort $ map passID ps
 
 missing :: [Int] -> Int
 missing []  = -1

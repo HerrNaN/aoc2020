@@ -73,17 +73,17 @@ isValidB p = isValidA p &&
                     Right (i, "cm") -> i >= 150 && i <= 193
                     Right (i, "in") -> i >= 59 && i <= 76
 
-solveA :: String -> Int
-solveA = solveA' . dayInput
+day04a :: String -> Int
+day04a = solveA . dayInput
 
-solveA' :: [Passport] -> Int
-solveA' = sum . map (fromEnum . isValidA)
+solveA :: [Passport] -> Int
+solveA = sum . map (fromEnum . isValidA)
 
-solveB :: String -> Int
-solveB = solveB' . dayInput
+day04b :: String -> Int
+day04b = solveB . dayInput
 
-solveB' :: [Passport] -> Int
-solveB' = sum . map (fromEnum . isValidB)
+solveB :: [Passport] -> Int
+solveB = sum . map (fromEnum . isValidB)
 
 dayInput :: String -> [Passport]
 dayInput input = case parse parsePassports input of

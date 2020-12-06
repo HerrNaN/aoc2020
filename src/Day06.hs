@@ -8,17 +8,17 @@ import Data.List.Split (splitOn)
 
 type Group = S.Set Char
 
-solveA :: String -> Int
-solveA = solveA' . dayInput (parseGroup groupA)
+day06a :: String -> Int
+day06a = solveA . dayInput (parseGroup groupA)
 
-solveA' :: [Group] -> Int
-solveA' = sum . map S.size
+solveA :: [Group] -> Int
+solveA = sum . map S.size
 
-solveB :: String -> Int
-solveB = solveB' . dayInput (parseGroup groupB)
+day06b :: String -> Int
+day06b = solveB . dayInput (parseGroup groupB)
 
-solveB' :: [Group] -> Int
-solveB' = sum . map S.size
+solveB :: [Group] -> Int
+solveB = sum . map S.size
 
 dayInput :: (String -> Group) -> String -> [Group]
 dayInput p = map p . splitOn "\n\n"

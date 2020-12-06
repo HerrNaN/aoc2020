@@ -1,21 +1,24 @@
-module Day01 where
+module Day01 (
+    day01a,
+    day01b
+) where
 
 import Parse
 
-solveA :: String -> Int
-solveA = solveA' . dayInput
+day01a :: String -> Int
+day01a = solveA . dayInput
 
-solveA' :: [Int] -> Int
-solveA' xs = x * y
+solveA :: [Int] -> Int
+solveA xs = x * y
     where (x,y) = head [(a, b) | a <- xs,
                                  b <- xs,
                                  a+b==2020]
 
-solveB :: String -> Int
-solveB = solveB' . dayInput
+day01b :: String -> Int
+day01b = solveB . dayInput
 
-solveB' :: [Int] -> Int
-solveB' xs = x * y * z
+solveB :: [Int] -> Int
+solveB xs = x * y * z
     where (x,y,z) = head [(a, b, c) | a <- xs,
                                       b <- xs,
                                       c <- xs,

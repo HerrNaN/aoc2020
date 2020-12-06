@@ -10,17 +10,17 @@ type Password = String
 type Entry = (Policy, Password)
 type Database = [Entry]
 
-solveA :: String -> Int
-solveA = solveA' . dayInput
+day02a :: String -> Int
+day02a = solveA . dayInput
 
-solveA' :: Database -> Int
-solveA' = length . filter entryValidA
+solveA :: Database -> Int
+solveA = length . filter entryValidA
 
-solveB :: String -> Int
-solveB = solveB' . dayInput
+day02b :: String -> Int
+day02b = solveB . dayInput
 
-solveB' :: Database -> Int
-solveB' = length . filter entryValidB
+solveB :: Database -> Int
+solveB = length . filter entryValidB
 
 entryValidA :: Entry -> Bool
 entryValidA ((min, max, char), pass) = count >= min && count <= max

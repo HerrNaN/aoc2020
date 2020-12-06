@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5cde5cbe0446d45ee13efb8efcbed6f87a2e38d31e0603376d2e3ac72a20d7a0
+-- hash: 97ad8ea4aefdaadc95647bd58686a58a06a88e75ff489389ce02e650f02e2d3a
 
 name:           aoc
 version:        0.1.0.0
@@ -28,6 +28,7 @@ library
       Day04
       Day05
       Day06
+      Days
       DayXX
       Input
       Parse
@@ -36,7 +37,8 @@ library
   hs-source-dirs:
       src
   build-depends:
-      base >=4.7 && <5
+      advent-of-code-api
+    , base >=4.7 && <5
     , containers
     , directory
     , hspec
@@ -57,6 +59,7 @@ executable aoc-exe
       Day04
       Day05
       Day06
+      Days
       DayXX
       Input
       Parse
@@ -66,7 +69,8 @@ executable aoc-exe
       src
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      aoc
+      advent-of-code-api
+    , aoc
     , base >=4.7 && <5
     , containers
     , directory
@@ -89,6 +93,7 @@ test-suite aoc-test
       Day04
       Day05
       Day06
+      Days
       DayXX
       Input
       Parse
@@ -98,7 +103,8 @@ test-suite aoc-test
       src
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      aoc
+      advent-of-code-api
+    , aoc
     , base >=4.7 && <5
     , containers
     , directory

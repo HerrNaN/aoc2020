@@ -1,11 +1,7 @@
+{-# LANGUAGE RecordWildCards #-}
 module Main where
 
-import qualified Day01 as D01 
-import qualified Day02 as D02
-import qualified Day03 as D03
-import qualified Day04 as D04
-import qualified Day05 as D05
-import qualified Day06 as D06
+import Days
 import Input
 
 type DayNumber = Int
@@ -33,12 +29,12 @@ printYear (year, days) = do
   (DayNumber, solution A, solution B)
 -}
 days2020 :: [Day]
-days2020 = [  (1, show . D01.solveA, show . D01.solveB)
-             ,(2, show . D02.solveA, show . D02.solveB)
-             ,(3, show . D03.solveA, show . D03.solveB)
-             ,(4, show . D04.solveA, show . D04.solveB)
-             ,(5, show . D05.solveA, show . D05.solveB)
-             ,(6, show . D06.solveA, show . D06.solveB)
+days2020 = [  (1, show . day01a, show . day01b)
+             ,(2, show . day02a, show . day02b)
+             ,(3, show . day03a, show . day03b)
+             ,(4, show . day04a, show . day04b)
+             ,(5, show . day05a, show . day05b)
+             ,(6, show . day06a, show . day06b)
              ]
 
 -- | Formats the solution outputs for a given day in a nice way.
