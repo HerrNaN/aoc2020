@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 97ad8ea4aefdaadc95647bd58686a58a06a88e75ff489389ce02e650f02e2d3a
+-- hash: 5f9de980ed311695081765ca7a9709ed878832450de6bfacaca057c714bee177
 
 name:           aoc
 version:        0.1.0.0
@@ -21,13 +21,13 @@ extra-source-files:
 
 library
   exposed-modules:
-      Cookie
       Day01
       Day02
       Day03
       Day04
       Day05
       Day06
+      Day07
       Days
       DayXX
       Input
@@ -41,10 +41,10 @@ library
     , base >=4.7 && <5
     , containers
     , directory
-    , hspec
     , http-conduit
     , parsec
     , split
+    , text
     , time
     , utf8-string
   default-language: Haskell2010
@@ -52,13 +52,13 @@ library
 executable aoc-exe
   main-is: Main.hs
   other-modules:
-      Cookie
       Day01
       Day02
       Day03
       Day04
       Day05
       Day06
+      Day07
       Days
       DayXX
       Input
@@ -74,10 +74,10 @@ executable aoc-exe
     , base >=4.7 && <5
     , containers
     , directory
-    , hspec
     , http-conduit
     , parsec
     , split
+    , text
     , time
     , utf8-string
   default-language: Haskell2010
@@ -86,13 +86,13 @@ test-suite aoc-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Cookie
       Day01
       Day02
       Day03
       Day04
       Day05
       Day06
+      Day07
       Days
       DayXX
       Input
@@ -112,6 +112,7 @@ test-suite aoc-test
     , http-conduit
     , parsec
     , split
+    , text
     , time
     , utf8-string
   default-language: Haskell2010

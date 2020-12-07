@@ -4,10 +4,10 @@ module Main where
 import Days
 import Input
 
-type DayNumber = Int
+type DayNumber = Integer
 type Solution = String -> String
 type Day = (DayNumber, Solution, Solution)
-type Year = (Int, [Day])
+type Year = (Integer, [Day])
 
 main :: IO ()
 main = mapM_ printYear years
@@ -35,6 +35,7 @@ days2020 = [  (1, show . day01a, show . day01b)
              ,(4, show . day04a, show . day04b)
              ,(5, show . day05a, show . day05b)
              ,(6, show . day06a, show . day06b)
+             ,(7, show . day07a, show . day07b)
              ]
 
 -- | Formats the solution outputs for a given day in a nice way.
