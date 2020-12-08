@@ -36,6 +36,7 @@ days2020 = [  (1, show . day01a, show . day01b)
              ,(5, show . day05a, show . day05b)
              ,(6, show . day06a, show . day06b)
              ,(7, show . day07a, show . day07b)
+             ,(8, show . day08a, show . day08b)
              ]
 
 -- | Formats the solution outputs for a given day in a nice way.

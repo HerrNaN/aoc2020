@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5f9de980ed311695081765ca7a9709ed878832450de6bfacaca057c714bee177
+-- hash: 135daa27e8b5831912ac893bbb8b2f99eaec864132e159ff162729ceb1e47976
 
 name:           aoc
 version:        0.1.0.0
@@ -28,6 +28,7 @@ library
       Day05
       Day06
       Day07
+      Day08
       Days
       DayXX
       Input
@@ -59,6 +60,7 @@ executable aoc-exe
       Day05
       Day06
       Day07
+      Day08
       Days
       DayXX
       Input
@@ -93,6 +95,7 @@ test-suite aoc-test
       Day05
       Day06
       Day07
+      Day08
       Days
       DayXX
       Input
