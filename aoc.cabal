@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 135daa27e8b5831912ac893bbb8b2f99eaec864132e159ff162729ceb1e47976
+-- hash: e6575e6b181ccfc33cb611a073042a215e7d5d1758417c7b574d87dd7163db5c
 
 name:           aoc
 version:        0.1.0.0
@@ -43,6 +43,7 @@ library
     , containers
     , directory
     , http-conduit
+    , mtl
     , parsec
     , split
     , text
@@ -77,6 +78,7 @@ executable aoc-exe
     , containers
     , directory
     , http-conduit
+    , mtl
     , parsec
     , split
     , text
@@ -113,6 +115,7 @@ test-suite aoc-test
     , directory
     , hspec
     , http-conduit
+    , mtl
     , parsec
     , split
     , text

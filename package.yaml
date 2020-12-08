@@ -29,6 +29,7 @@ dependencies:
 - containers
 - advent-of-code-api
 - text
+- mtl
 
 library:
   source-dirs: src

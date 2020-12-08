@@ -1,3 +1,4 @@
+{-# LANGUAGE RecordWildCards #-}
 module Day08 where
 
 import           Parse
@@ -9,15 +10,19 @@ import qualified Data.Set as Set
 import           Data.Functor (($>))
 import           Data.Sequence.Internal (Seq((:<|)), (><))
 import           Data.Either ()
+import           Data.Maybe
 import           Data.Bifunctor (Bifunctor(first))
+import           Control.Monad.State
 
 day08a :: String -> Int
-day08a = solveA . dayInput
+day08a = solveA . dayInput'
 
-solveA :: Program -> Int
-solveA p = case runProg (0, Set.empty, Seq.empty, p) of
-    Exit Loop n -> n
-    Exit Term n -> error $ "program terminated with value " ++ show n
+solveA :: Program' -> Int
+solveA p = eAcc s'
+    where (_, s') = runState run $ Env{eMemory=p,ePC=0,eAcc=0,eRunLines=Set.empty}
+-- solveA p = case runProg (0, Set.empty, Seq.empty, p) of
+--     Exit Loop n -> n
+--     Exit Term n -> error $ "program terminated with value " ++ show n
 
 runProg :: ProgramState -> ExitCode
 runProg s = case step s of
@@ -87,6 +92,48 @@ data Dir = Up | Down deriving (Show, Eq)
 data Op = Nop | Acc | Jmp deriving (Show, Eq)
 type Instruction = (Op, Int)
 type Program = Seq (Int, Instruction)
+type Program' = Seq Instruction
+
+data Env = Env 
+    { eMemory :: Seq Instruction
+    , ePC :: Int
+    , eAcc :: Int
+    , eRunLines :: Set Int
+    }
+
+type Prog = State Env ()
+
+run :: Prog
+run = do
+    pc <- gets ePC
+    memSize <- gets (Seq.length . eMemory)
+    runLines <- gets eRunLines
+    if pc >= memSize || Set.member pc runLines then return ()
+    else do
+        gets (line pc) >>= step'
+        modify (addLine pc)
+        run
+    where addLine n e@Env{..} = e{eRunLines = Set.insert n eRunLines}
+
+incPc :: Prog
+incPc = modify incPc'
+    where incPc' e@Env{..} = e{ePC = ePC + 1}
+
+step' :: Instruction -> Prog
+step' (op, n)
+    | op == Acc = modify acc >> incPc
+    | op == Jmp = modify jmp
+    | otherwise = incPc
+    where acc e@Env{..} = e{eAcc = eAcc + n}
+          jmp e@Env{..} = e{ePC  = ePC +  n} 
+
+line :: Int -> Env -> Instruction
+line n = fromJust . Seq.lookup n . eMemory
+
+dayInput' :: String -> Program'
+dayInput' input = case parse instructions input of
+    Right is -> Seq.fromList is
+    Left  e  -> error $ show e
 
 dayInput :: String -> Program
 dayInput input = case parse instructions input of
