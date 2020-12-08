@@ -18,11 +18,10 @@ day08a :: String -> Int
 day08a = solveA . dayInput'
 
 solveA :: Program' -> Int
-solveA p = eAcc s'
-    where (_, s') = runState run $ Env{eMemory=p,ePC=0,eAcc=0,eRunLines=Set.empty}
--- solveA p = case runProg (0, Set.empty, Seq.empty, p) of
---     Exit Loop n -> n
---     Exit Term n -> error $ "program terminated with value " ++ show n
+solveA p = case s of
+            Loop' n -> n
+            _       -> error "didn't find a loop"
+    where s = evalState run $ Env{eMemory=p,ePC=0,eAcc=0,eRunLines=Set.empty}
 
 runProg :: ProgramState -> ExitCode
 runProg s = case step s of
@@ -93,6 +92,7 @@ data Op = Nop | Acc | Jmp deriving (Show, Eq)
 type Instruction = (Op, Int)
 type Program = Seq (Int, Instruction)
 type Program' = Seq Instruction
+data Status = Term' Int | Loop' Int | Running' deriving (Eq)
 
 data Env = Env 
     { eMemory :: Seq Instruction
@@ -101,14 +101,17 @@ data Env = Env
     , eRunLines :: Set Int
     }
 
-type Prog = State Env ()
+type Prog = State Env Status
 
 run :: Prog
 run = do
     pc <- gets ePC
     memSize <- gets (Seq.length . eMemory)
     runLines <- gets eRunLines
-    if pc >= memSize || Set.member pc runLines then return ()
+    if pc >= memSize
+        then gets (Term' . eAcc)
+    else if Set.member pc runLines
+        then gets (Loop' . eAcc)
     else do
         gets (line pc) >>= step'
         modify (addLine pc)
@@ -116,13 +119,13 @@ run = do
     where addLine n e@Env{..} = e{eRunLines = Set.insert n eRunLines}
 
 incPc :: Prog
-incPc = modify incPc'
+incPc = withState incPc' $ return Running'
     where incPc' e@Env{..} = e{ePC = ePC + 1}
 
 step' :: Instruction -> Prog
 step' (op, n)
-    | op == Acc = modify acc >> incPc
-    | op == Jmp = modify jmp
+    | op == Acc = withState acc incPc
+    | op == Jmp = withState jmp $ return Running'
     | otherwise = incPc
     where acc e@Env{..} = e{eAcc = eAcc + n}
           jmp e@Env{..} = e{ePC  = ePC +  n} 
