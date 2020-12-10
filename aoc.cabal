@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6cd39f21d909e35436e3328b93e1a0752d727106141e3cefd39624b24482e43b
+-- hash: 465aaff6126bdd7b53f5a11a0648c38d48212783b05fbf110857dfdcd34d65f0
 
 name:           aoc
 version:        0.1.0.0
@@ -21,6 +21,7 @@ extra-source-files:
 
 library
   exposed-modules:
+      Common
       Day01
       Day02
       Day03
@@ -56,6 +57,7 @@ library
 executable aoc-exe
   main-is: Main.hs
   other-modules:
+      Common
       Day01
       Day02
       Day03
@@ -94,6 +96,7 @@ test-suite aoc-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Common
       Day01
       Day02
       Day03

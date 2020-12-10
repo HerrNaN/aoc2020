@@ -6,6 +6,7 @@ import qualified Data.Map as Map
 import Data.Map.Strict (Map)
 import Parse
 import Data.List (group, sort)
+import Common
 
 day10a :: String -> Int
 day10a = solveA . dayInput
@@ -23,9 +24,6 @@ solveB is = go (0:is ++ [maximum is])
 
 diffs :: Num c => [c] -> [c]
 diffs xs@(_:ys)= zipWith (-) ys xs 
-
-freq :: Ord a => [a] -> Map a Int
-freq = Map.fromListWith (+) . map (,1)
 
 countWays :: Int -> Int
 countWays 1 = 1
