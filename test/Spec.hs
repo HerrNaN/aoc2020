@@ -26,7 +26,8 @@ tests = [
          ,(5, (show . day05a, "820"   ), (       noTest, "NO TEST"  ))
          ,(6, (show . day06a, "11"    ), (show . day06b, "6"        ))
          ,(7, (show . day07a, "4"     ), (show . day07b, "32"       ))
-         ,(8, (show . day08a, "5"     ), (show . day08b, "8"       ))
+         ,(8, (show . day08a, "5"     ), (show . day08b, "8"        ))
+         ,(9, (show . day09a 5, "127" ), (show . day09b 5, "62"     ))
         ]
 
 -- | Runs the tests a given entry in the tests list.
