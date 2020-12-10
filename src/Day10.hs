@@ -1,3 +1,4 @@
+{-# LANGUAGE TupleSections #-}
 module Day10 where
 
 import qualified Text.Parsec as P
@@ -11,21 +12,20 @@ day10a = solveA . dayInput
 
 solveA :: [Int] -> Int
 solveA is = Map.findWithDefault 0 1 m * (Map.findWithDefault 0 3 m + 1)
-    where m = diffFreq $ sort is
-
-diffFreq :: [Int] -> Map Int Int
-diffFreq = snd . foldl f (0, Map.empty)
-    where f (a, m) b = (b, Map.insertWith (+) (b-a) 1 m)
+    where m = freq (diffs (sort (0:is ++ [maximum is])))
 
 day10b :: String -> Int
 day10b = solveB . dayInput
 
 solveB :: [Int] -> Int
-solveB = product . map (countWays . length) . filter ((==1) . head) . group . diffList . sort 
+solveB is = go (0:is ++ [maximum is])
+    where go = product . map (countWays . sum) . filter ((==1) . head) . group . diffs . sort
 
-diffList :: [Int] -> [Int]
-diffList = snd . foldl f (0, [])
-    where f (i, xs) a = (a, (a-i):xs)
+diffs :: Num c => [c] -> [c]
+diffs xs@(_:ys)= zipWith (-) ys xs 
+
+freq :: Ord a => [a] -> Map a Int
+freq = Map.fromListWith (+) . map (,1)
 
 countWays :: Int -> Int
 countWays 1 = 1
