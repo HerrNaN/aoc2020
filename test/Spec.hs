@@ -28,6 +28,7 @@ tests = [
          ,(7, (show . day07a, "4"     ), (show . day07b, "32"       ))
          ,(8, (show . day08a, "5"     ), (show . day08b, "8"        ))
          ,(9, (show . day09a 5, "127" ), (show . day09b 5, "62"     ))
+         ,(10,(show . day10a, "220"   ), (show . day10b, "19208"    ))
         ]
 
 -- | Runs the tests a given entry in the tests list.

@@ -16,7 +16,9 @@ module Days (
     day08a,
     day08b,
     day09a,
-    day09b
+    day09b,
+    day10a,
+    day10b
 ) where
 
 import Day01
@@ -28,3 +30,4 @@ import Day06
 import Day07
 import Day08
 import Day09
+import Day10
