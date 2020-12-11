@@ -1,9 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 module Day11 where
 
-import qualified Data.IntMap as IM
-import Data.IntMap (IntMap)
-import qualified Data.Map.Strict as Map
 import qualified Text.Parsec as P
 import Text.Parsec ((<|>), Parsec)
 import Data.Functor (($>))
@@ -12,9 +9,8 @@ import Data.Vector (Vector)
 import Data.Maybe
 import Control.Monad.State
 import Parse
-import Debug.Trace (traceShow)
 import Data.List.Split (chunksOf)
-import Data.List (sort)
+import Common ( Point, pAdd, pMul )
 
 day11a :: String -> Int
 day11a = solveA . dayInput
@@ -66,9 +62,9 @@ changes :: Env -> Vector Bool
 changes e@E{..} = V.imap (willChange e) eSeats 
 
 toCheckA :: Env -> Int -> [Int]
-toCheckA E{..} n = map (idxFromPoint eWidth) $ filter (inBounds eWidth eHeight) $ map (pointAdd (pointFromIdx eWidth n)) adjs
+toCheckA E{..} n = map (idxFromPoint eWidth) $ filter (inBounds eWidth eHeight) $ map (pAdd (pointFromIdx eWidth n)) adjs
 
-adjs :: [(Int, Int)]
+adjs :: [Point]
 adjs = [(x,y) | x <- [-1,0,1],
                 y <- [-1,0,1],
                 not (x == 0 && y == 0)]
@@ -76,32 +72,26 @@ adjs = [(x,y) | x <- [-1,0,1],
 toCheckB :: Env -> Int -> [Int]
 toCheckB e@E{..} n = mapMaybe (checkDir e (pointFromIdx eWidth n)) adjs
 
-checkDir :: Env -> (Int, Int) -> (Int, Int) -> Maybe Int
+checkDir :: Env -> Point -> Point -> Maybe Int
 checkDir e p d = checkDir' e p d 1
 
-checkDir' :: Env -> (Int, Int) -> (Int, Int) -> Int -> Maybe Int
+checkDir' :: Env -> Point -> Point -> Int -> Maybe Int
 checkDir' e@E{..} p d n
     | not (inBounds eWidth eHeight p') = Nothing
     | s == Occ   = Just x
     | s == Empty = Nothing
     | otherwise  = checkDir' e p d (n+1)
-    where p' = pointAdd p $ pointMul d n
+    where p' = pAdd p $ pMul d (n,n)
           x  = idxFromPoint eWidth p'
           s  = eSeats V.! x
 
-idxFromPoint :: Int -> (Int, Int) -> Int
+idxFromPoint :: Int -> Point -> Int
 idxFromPoint w (x,y) = y * w + x
 
-pointFromIdx :: Int -> Int -> (Int, Int)
+pointFromIdx :: Int -> Int -> Point
 pointFromIdx w n = (n `mod` w, n `quot` w)
 
-pointAdd :: (Int, Int) -> (Int, Int) -> (Int, Int)
-pointAdd (x,y) (a,b) = (x+a, b+y)
-
-pointMul :: (Int, Int) -> Int -> (Int, Int)
-pointMul (x,y) n = (n*x,n*y)
-
-inBounds :: Int -> Int -> (Int, Int) -> Bool
+inBounds :: Int -> Int -> Point -> Bool
 inBounds w h (x,y) = x >= 0 && x < w && y >= 0 && y < h
 
 willChange :: Env -> Int -> Seat -> Bool
