@@ -30,6 +30,7 @@ dependencies:
 - advent-of-code-api
 - text
 - mtl
+- vector
 
 library:
   source-dirs: src

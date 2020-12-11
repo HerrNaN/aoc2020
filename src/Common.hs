@@ -1,7 +1,8 @@
 {-# LANGUAGE TupleSections #-}
 module Common (
     freq,
-    firstRepeat
+    firstRepeat,
+    findStable
 ) where
 
 import qualified Data.Map as Map
@@ -20,3 +21,7 @@ firstRepeat' _ [] = Nothing
 firstRepeat' seen (x:xs)
     | Set.member x seen = Just x
     | otherwise = firstRepeat' (Set.insert x seen) xs
+
+findStable :: Eq a => [a] -> Maybe a
+findStable [] = Nothing
+findStable as@(a:a':_) = if a == a' then Just a else findStable (tail as)
