@@ -4,7 +4,9 @@
 module Common (
     freq,
     firstRepeat,
-    findFirstCons,
+    fixedPoint,
+    countTrue,
+    steps,
     Point,
     pAdd,
     pSub,
@@ -24,6 +26,7 @@ import           Data.Set (Set)
 import           Data.Vector (Vector())
 import qualified Data.Vector as Vec
 import Data.List (group)
+import Data.Foldable (Foldable(toList))
 
 freq :: Ord a => [a] -> Map a Int
 freq = Map.fromListWith (+) . map (,1)
@@ -39,6 +42,17 @@ firstRepeat' seen (x:xs)
 
 findFirstCons :: Eq a => [a] -> a
 findFirstCons = head . head . filter ((>1) . length) . group
+
+fixedPoint :: Eq a => (a -> a) -> a -> a
+fixedPoint f a = if a == b then a else fixedPoint f b
+    where b = f a
+
+steps :: (t -> t) -> t -> [t]
+steps f s = s : steps f s'
+    where s' = f s
+
+countTrue :: (Foldable f) => (a -> Bool) -> f a -> Int
+countTrue p = length . filter p . toList
 
 type Point = (Int, Int)
 

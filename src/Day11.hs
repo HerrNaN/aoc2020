@@ -1,6 +1,10 @@
 {-# LANGUAGE RecordWildCards #-}
 module Day11 where
 
+import qualified Data.Map as M
+import Data.Map.Strict (Map)
+import qualified Data.Set as S
+import Data.Set (Set)
 import qualified Text.Parsec as P
 import Text.Parsec ((<|>), Parsec)
 import Data.Functor (($>))
@@ -35,6 +39,9 @@ data Env = E
     , eCheck  :: Env -> Int -> [Int]
     , eMinOcc :: Int
     }
+
+type Seats = Map Point Bool
+type NMap = Map Point (Set Point)
 
 type WaitingHall = State Env ()
 

@@ -31,6 +31,7 @@ dependencies:
 - text
 - mtl
 - vector
+- linear
 
 library:
   source-dirs: src

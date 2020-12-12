@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f9c114f61b2abc16df1b100995b5222e89317b9e82fddd921c45432445eecefc
+-- hash: ed1177c13561205a04a5939ea969266e2ad84cc0a79931db2f7407ed25cc9542
 
 name:           aoc
 version:        0.1.0.0
@@ -33,6 +33,7 @@ library
       Day09
       Day10
       Day11
+      Day11a
       Day12
       Days
       DayXX
@@ -48,6 +49,7 @@ library
     , containers
     , directory
     , http-conduit
+    , linear
     , mtl
     , parsec
     , split
@@ -72,6 +74,7 @@ executable aoc-exe
       Day09
       Day10
       Day11
+      Day11a
       Day12
       Days
       DayXX
@@ -89,6 +92,7 @@ executable aoc-exe
     , containers
     , directory
     , http-conduit
+    , linear
     , mtl
     , parsec
     , split
@@ -114,6 +118,7 @@ test-suite aoc-test
       Day09
       Day10
       Day11
+      Day11a
       Day12
       Days
       DayXX
@@ -132,6 +137,7 @@ test-suite aoc-test
     , directory
     , hspec
     , http-conduit
+    , linear
     , mtl
     , parsec
     , split
