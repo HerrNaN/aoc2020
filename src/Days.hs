@@ -22,9 +22,9 @@ module Days (
     day11a,
     day11b,
     day12a,
-    day12b
-    -- day13a,
-    -- day13b,
+    day12b,
+    day13a,
+    day13b,
     -- day14a,
     -- day14b,
     -- day15a,
@@ -63,7 +63,7 @@ import Day09
 import Day10
 import Day11
 import Day12
--- import Day13
+import Day13
 -- import Day14
 -- import Day15
 -- import Day16
