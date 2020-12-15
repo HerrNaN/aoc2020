@@ -19,8 +19,12 @@ main = hspec $ describe "Advent of Code 2020" $ mapM_ testSolution tests
 -}
 tests :: [(Int, (String -> String, String), (String -> String, String))]
 tests = [
-          (1, (show . day01a, "514579"), (show . day01b, "241861950"))
-         ,(2, (show . day02a, "2"     ), (show . day02b, "1"        ))
+          (1,
+            (show . day01a, "514579" ), 
+            (show . day01b, "241861950" ))
+         ,(2,
+            (show . day02a, "2" ),
+            (show . day02b, "1" ))
          ,(3, (show . day03a, "7"     ), (show . day03b, "336"      ))
          ,(4, (show . day04a, "2"     ), (show . day04b, "2"        ))
          ,(5, (show . day05a, "820"   ), (       noTest, "NO TEST"  ))
@@ -32,6 +36,7 @@ tests = [
          ,(11,(show . day11a, "37"    ), (show . day11b, "26"       ))
          ,(12,(show . day12a, "25"    ), (show . day12b, "286"      ))
          ,(13,(show . day13a, "295"   ), (show . day13b, "1068788"  ))
+         ,(14,(show . day14a, "165"   ), (show . day14b, "208"      ))
         ]
 
 -- | Runs the tests a given entry in the tests list.

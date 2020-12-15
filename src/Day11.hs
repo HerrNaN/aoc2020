@@ -110,7 +110,7 @@ willChange e@E{..} idx s
 
 dayInput :: String -> Env
 dayInput input = case parse seats (concat ls) of
-                    Right im -> E{eHeight=h,eWidth=w,eSeats=im}
+                    Right im -> E{eHeight=h,eWidth=w,eSeats=im,eMinOcc=0,eCheck= \_ _ -> []}
                     Left e -> error $ show e
     where h = length ls
           w = length l

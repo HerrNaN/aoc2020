@@ -1,5 +1,16 @@
 module DayXX where
 
+import qualified Text.Parsec as P
+import qualified Data.Map as M
+import qualified Data.Set as S
+import Text.Parsec (Parsec)
+import Data.Map (Map)
+import Data.Set (Set)
+import Data.Functor
+import Control.Applicative
+import Parse
+import Common
+
 dayXXa :: String -> b
 dayXXa = solveA . dayInput
 
