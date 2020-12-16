@@ -2,11 +2,9 @@ module Main where
 
 import Test.Hspec
 import Days
-import Input
 import Data.Maybe (fromJust, isJust)
 import Control.Monad (when)
 import System.Directory
-import Advent (Part)
 
 
 main :: IO ()
@@ -71,6 +69,33 @@ tests = [
          ,(16,
             Just (show . day16a, "71" ),
             Nothing )  -- No good test case
+        --  ,(17,
+        --     Just (show . day17a, "165" ),
+        --     Just (show . day17b, "208" ))
+        --  ,(18,
+        --     Just (show . day18a, "165" ),
+        --     Just (show . day18b, "208" ))
+        --  ,(19,
+        --     Just (show . day19a, "165" ),
+        --     Just (show . day19b, "208" ))
+        --  ,(20,
+        --     Just (show . day20a, "165" ),
+        --     Just (show . day20b, "208" ))
+        --  ,(21,
+        --     Just (show . day21a, "165" ),
+        --     Just (show . day21b, "208" ))
+        --  ,(22,
+        --     Just (show . day22a, "165" ),
+        --     Just (show . day22b, "208" ))
+        --  ,(23,
+        --     Just (show . day23a, "165" ),
+        --     Just (show . day23b, "208" ))
+        --  ,(24,
+        --     Just (show . day24a, "165" ),
+        --     Just (show . day24b, "208" ))
+        --  ,(25,
+        --     Just (show . day25a, "165" ),
+        --     Just (show . day25b, "208" ))
         ]
 
 -- | Runs the tests a given entry in the tests list.
