@@ -65,7 +65,7 @@ tests = [
             Just (show . day14b, "208" ))
          ,(15,
             Just (show . day15a, "436" ),
-            Nothing )  -- Runs WAAAY to slowly
+            Just (show . day15b, "175594" ))  -- Runs WAAAY to slowly
          ,(16,
             Just (show . day16a, "71" ),
             Nothing )  -- No good test case
