@@ -49,18 +49,18 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - aoc
-  # bench:
-  #   main: Main.hs
-  #   source-dirs:
-  #   - bench
-  #   - src
-  #   ghc-options:
-  #   - -threaded
-  #   - -rtsopts
-  #   - -with-rtsopts=-N
-  #   dependencies:
-  #   - aoc
-  #   - criterion
+  bench:
+    main: Bench.hs
+    source-dirs:
+    - bench
+    - src
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - aoc
+    - criterion
 
 
 tests:
