@@ -2,13 +2,9 @@
 module Main where
 
 import Criterion.Main
-
 import qualified Criterion as C
 import Days
 import Input
-import Advent (Part)
-import Advent.Types (Part(..))
-import Control.Monad (forM)
 
 main :: IO ()
 main = benches >>= Criterion.Main.defaultMain
