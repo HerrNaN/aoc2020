@@ -43,6 +43,8 @@ days2020 = [  (1, show . day01a, show . day01b)
              ,(12,show . day12a, show . day12b)
              ,(13,show . day13a, show . day13b)
              ,(14,show . day14a, show . day14b)
+             ,(15,show . day15a, tooSlow      )
+             ,(16,show . day16a, show . day16b)
              ]
 
 -- | Formats the solution outputs for a given day in a nice way.
@@ -52,3 +54,6 @@ printDay prefix (day, solvePartA, solvePartB) = do
     putStrLn $           "Day "        ++ show day
     putStrLn $ prefix ++ " ├ Part A: " ++ solvePartA input
     putStrLn $ prefix ++ " └ Part B: " ++ solvePartB input
+
+tooSlow :: String -> String
+tooSlow _ = "TOO SLOW"

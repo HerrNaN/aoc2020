@@ -1,6 +1,6 @@
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE BangPatterns #-}
-module Main where
+module Day15 where
 
 import qualified Data.IntMap as IM
 import Data.IntMap (IntMap)
