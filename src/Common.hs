@@ -9,6 +9,8 @@ module Common (
     steps,
     Vector2D,
     mkVec2D,
+    asciiGrid0,
+    asciiGrid1
 ) where
 
 import qualified Data.Map as Map
@@ -19,6 +21,7 @@ import           Data.Vector (Vector())
 import qualified Data.Vector as Vec
 import Data.List (group)
 import Data.Foldable (Foldable(toList))
+import Linear.V2
 
 freq :: Ord a => [a] -> Map a Int
 freq = Map.fromListWith (+) . map (,1)
@@ -56,3 +59,11 @@ mkVec2D w h = Vec2D
     , _height=h
     }
 
+asciiGrid' :: Int -> String -> Map (Int, Int) Char
+asciiGrid' n = Map.fromList . concatMap (\(x, s) -> zipWith (\y c -> ((x,y),c)) [n..] s) . zip [n..] . lines
+
+asciiGrid0 :: String -> Map (Int, Int) Char
+asciiGrid0 = asciiGrid' 0
+
+asciiGrid1 :: String -> Map (Int, Int) Char
+asciiGrid1 = asciiGrid' 0

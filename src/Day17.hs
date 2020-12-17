@@ -10,6 +10,7 @@ import Data.Set (Set)
 import Data.Maybe ( catMaybes )
 import Linear.V3 ( V3(..) )
 import Linear.V4 ( V4(..) )
+import Common (asciiGrid1)
 
 day17a :: String -> Int
 day17a = solveA . dayInput toV3
@@ -47,12 +48,10 @@ dayInput ::
     => (Int -> Int -> t a) -- Upscaling dimention function
     -> String              -- Input
     -> Set (t a)           -- Set of active cubes
-dayInput f = S.fromList
-            . catMaybes
-            . concatMap idxn
-            . zip [1..]
-            . lines
-    where idxn (x,s) = zipWith (\y c -> if c == '#' then Just (f x y) else Nothing) [1..] s
+dayInput f =  M.keysSet
+            . M.mapKeys (uncurry f)
+            . M.mapMaybe (\c -> if c == '#' then Just c else Nothing)
+            . asciiGrid1
 
 toV3 :: Num a => a -> a -> V3 a
 toV3 x y = V3 x y 1
