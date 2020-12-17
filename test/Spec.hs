@@ -65,13 +65,13 @@ tests = [
             Just (show . day14b, "208" ))
          ,(15,
             Just (show . day15a, "436" ),
-            Just (show . day15b, "175594" ))  -- Runs WAAAY to slowly
+            Just (show . day15b, "175594" ))
          ,(16,
             Just (show . day16a, "71" ),
             Nothing )  -- No good test case
-        --  ,(17,
-        --     Just (show . day17a, "165" ),
-        --     Just (show . day17b, "208" ))
+         ,(17,
+            Just (show . day17a, "112" ),
+            Just (show . day17b, "848" ))
         --  ,(18,
         --     Just (show . day18a, "165" ),
         --     Just (show . day18b, "208" ))
