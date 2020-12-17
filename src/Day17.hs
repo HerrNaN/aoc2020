@@ -1,3 +1,4 @@
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE LambdaCase #-}
 module Day17 where
@@ -16,95 +17,74 @@ import Common ( countTrue )
 import Data.Maybe
 import Linear.V3 ( V3(..) )
 import Linear.V4 ( V4(..) )
+import Linear.V
+import Linear (V2(V2))
+import Linear.V2
+import Control.Lens
 
-type Point3 = V3 Int
-type Point4 = V4 Int
+-- type Point3 = V3 Int
+-- type Point4 = V4 Int
 -- type Space = Map Point3 Bool
-type Space3 = Map Point3 Bool
-type Space4 = Map Point4 Bool
+type Space n = V n Int
+-- type Space3 = Map Point3 Bool
+-- type Space4 = Map Point4 Bool
 -- type Neighbours = Map (V3 Int) (Set (V3 Int))
 
 day17a :: String -> Int
-day17a = solveA . dayInput3
+day17a = solveA . dayInput toV3
 
-solveA :: Space3 -> Int
-solveA = countTrue (==True) . (!! 6) . iterate step3
+solveA :: Set (V3 Int) -> Int
+solveA = S.size . (!! 6) . iterate step
 
 day17b :: String -> Int
-day17b = solveB . dayInput4
+day17b = solveB . dayInput toV4
 
-solveB :: Space4 -> Int
-solveB = countTrue id . (!! 6) . iterate step4
+solveB :: Set (V4 Int) -> Int
+solveB = S.size . (!! 6) . iterate step
 
-step3 :: Space3 -> Space3
-step3 gd = M.filter id $  step3' as gd
-    where as = M.mapWithKey (\k _ -> activeNeighbours3 gd k) $ toConsider3 gd
+step ::
+    (Traversable t, Applicative t, Num a1, Num (t a1), Ord (t a1))
+    => Set (t a1) -- Set of active cubes
+    -> Set (t a1) -- Set of active cubes
+step s = survive <> rise
+    where survive = M.keysSet . M.filter (\n -> n == 2 || n == 3)
+                        $ M.restrictKeys nbhm s
+          rise = M.keysSet . M.filter (== 3)
+                    $ M.withoutKeys nbhm s
+          nbhm = activeNeighboursMap s
 
-step4 :: Space4 -> Space4
-step4 gd = M.filter id $  step4' as gd
-    where as = M.mapWithKey (\k _ -> activeNeighbours4 gd k) $ toConsider4 gd
+activeNeighboursMap ::
+    (Ord (t a1), Traversable t, Applicative t, Num a2, Num a1, Num (t a1))
+    => Set (t a1)    -- Set of active cubes
+    -> Map (t a1) a2 -- Map of cube to its active neighbours
+activeNeighboursMap s = M.unionsWith (+) $
+    [ M.fromSet (const 1) (neighboursSet p)
+    | p <- S.toList s ]
 
-step3' :: Map Point3 Int -> Space3 -> Space3
-step3' anm gd = M.mapWithKey switch anm
-    where switch k an = case gd M.!? k of
-                            Just True  -> an == 2 || an == 3
-                            Just False -> an == 3
-                            Nothing    -> an == 3
-
-step4' :: Map Point4 Int -> Space4 -> Space4
-step4' anm gd = M.mapWithKey switch anm
-    where switch k an = case gd M.!? k of
-                            Just True  -> an == 2 || an == 3
-                            Just False -> an == 3
-                            Nothing    -> an == 3
-
-toConsider3 :: Space3 -> Space3
-toConsider3 g = consider
-    where active = M.filter id g
-          nbhMaps = map (\v -> M.fromList $ map (\x -> (x+v, False)) adjs3) $ M.keys active
-          consider = M.unionsWith (||) (active:nbhMaps)
-          
-toConsider4 :: Space4 -> Space4
-toConsider4 g = consider
-    where active = M.filter id g
-          nbhMaps = map (\v -> M.fromList $ map (\x -> (x+v, False)) adjs4) $ M.keys active
-          consider = M.unionsWith (||) (active:nbhMaps)
-
-activeNeighbours3 :: Space3 -> Point3 -> Int
-activeNeighbours3 g v = countTrue (==True) $ map ((\b -> isJust b && fromJust b) . (g M.!?)) as
-    where as = map (+v) adjs3
-
-activeNeighbours4 :: Space4 -> Point4 -> Int
-activeNeighbours4 g v = countTrue (==True) $ map ((\b -> isJust b && fromJust b) . (g M.!?)) as
-    where as = map (+v) adjs4
-
-adjs3 :: [Point3]
-adjs3 = [V3 x y z | x <- [-1,0,1],
-                   y <- [-1,0,1],
-                   z <- [-1,0,1],
-                   x /= 0 || y /= 0 || z /= 0]
-
-adjs4 :: [Point4]
-adjs4 = [V4 x y z w | x <- [-1,0,1],
-                      y <- [-1,0,1],
-                      z <- [-1,0,1],
-                      w <- [-1,0,1],
-                      x /= 0 || y /= 0 || z /= 0 || w /= 0]
-
-dayInput3 :: String -> Space3
-dayInput3 = M.fromList
-            . mapMaybe (\(p, c) -> if c == '#' then Just (p,True) else Nothing)
+dayInput ::
+    (Ord (t a), Traversable t, Applicative t, Num a, Num (t a))
+    => (Int -> Int -> t a) -- Upscaling dimention function
+    -> String              -- Input
+    -> Set (t a)           -- Set of active cubes
+dayInput f = S.fromList
+            . catMaybes
             . concatMap idxn
-            . idx
+            . zip [1..]
             . lines
-    where idx = zip [1..]
-          idxn (x,s) = zipWith (\y c -> (V3 x y 1,c)) [1..] s
+    where idxn (x,s) = zipWith (\y c -> if c == '#' then Just (f x y) else Nothing) [1..] s
 
-dayInput4 :: String -> Space4
-dayInput4 = M.fromList
-            . mapMaybe (\(p, c) -> if c == '#' then Just (p,True) else Nothing)
-            . concatMap idxn
-            . idx
-            . lines
-    where idx = zip [1..]
-          idxn (x,s) = zipWith (\y c -> (V4 x y 1 1,c)) [1..] s
+toV3 :: Num a => a -> a -> V3 a
+toV3 x y = V3 x y 1
+
+toV4 :: Num a => a -> a -> V4 a
+toV4 x y = V4 x y 1 1
+
+neighboursSet ::
+    (Ord (t a), Traversable t, Applicative t, Num a, Num (t a))
+    => t a
+    -> Set (t a)
+neighboursSet p = S.fromList
+    [ p+d
+    | d <- sequence (pure [-1,0,1])
+    , d /= pure 0
+    ]
