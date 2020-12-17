@@ -7,13 +7,14 @@ import Parse
 import Common
 import Control.Monad.State
 import Debug.Trace
+import Linear ((*^), V2(V2))
 
 day12a :: String -> Int
 day12a = solveA . dayInput
 
 solveA :: [Action] -> Int
 solveA as = abs x + abs y
-    where (x,y) = evalState (run doActionA as) initBoat
+    where V2 x y = evalState (run doActionA as) initBoat
 
 type Ferry = State Boat Point
 
@@ -22,12 +23,13 @@ day12b = solveB . dayInput
 
 solveB :: [Action] -> Int
 solveB as = abs x + abs y
-    where (x,y) = evalState (run doActionB as) initBoat
+    where V2 x y = evalState (run doActionB as) initBoat
 
 
 run :: (Action -> Boat -> Boat) -> [Action] -> Ferry
 run doAction = foldr (withState . doAction) (gets _point)
 
+type Point = V2 Int 
 data MvDir = N | E | W | S
     deriving (Show, Eq)
 data TnDir = R | L
@@ -41,7 +43,7 @@ data Boat = B
     } deriving (Show, Eq)
 
 initBoat :: Boat
-initBoat = B{_point=(0,0),_facing=E,_waypoint=(10,1)}
+initBoat = B{_point=V2 0 0,_facing=E,_waypoint=V2 10 1}
 
 doActionB :: Action -> Boat -> Boat
 doActionB (Fwd n) b@B{..} = moveBoatTowards _waypoint n b
@@ -56,45 +58,44 @@ doActionA (Mv dir n  ) b  = moveBoatTowards (dirToPoint dir) n b
 turnBoat :: TnDir -> Int -> Boat -> Boat
 turnBoat dir deg b@B{..}
     | deg' == 0   = b
-    | deg' == 90  = b{_facing=pointToDir (dy,-dx)}
-    | deg' == 180 = b{_facing=pointToDir (-dx,-dy)}
-    | deg' == 270 = b{_facing=pointToDir (-dy,dx)}
+    | deg' == 90  = b{_facing=pointToDir $ V2   dy  (-dx)}
+    | deg' == 180 = b{_facing=pointToDir $ V2 (-dx) (-dy)}
+    | deg' == 270 = b{_facing=pointToDir $ V2 (-dy)   dx }
     where deg' = if dir == L then (-deg) `mod` 360 else deg `mod` 360
-          (dx,dy) = dirToPoint _facing
+          V2 dx dy = dirToPoint _facing
 
 turnWaypoint :: TnDir -> Int -> Boat -> Boat
 turnWaypoint dir deg b@B{..}
     | deg' == 0   = b
-    | deg' == 90  = b{_waypoint=(wy,-wx)}
-    | deg' == 180 = b{_waypoint=(-wx,-wy)}
-    | deg' == 270 = b{_waypoint=(-wy,wx)}
+    | deg' == 90  = b{_waypoint=_waypoint * V2   1  (-1)}
+    | deg' == 180 = b{_waypoint=_waypoint * V2 (-1) (-1)}
+    | deg' == 270 = b{_waypoint=_waypoint * V2 (-1)   1 }
     where deg' = if dir == L then (-deg) `mod` 360 else deg `mod` 360
-          (wx,wy) = _waypoint
 
 moveBoatTowards :: Point -> Int -> Boat -> Boat
-moveBoatTowards p n b@B{..} = b{_point=pAdd _point $ pMul (n,n) p}
+moveBoatTowards p n b@B{..} = b{_point=_point + (n *^ p)}
 
 moveWaypoint :: Point -> Int -> Boat -> Boat
-moveWaypoint p n b@B{..} = b{_waypoint=pAdd _waypoint $ pMul (n,n) p}
+moveWaypoint p n b@B{..} = b{_waypoint=_waypoint + (n *^ p)}
 
 toPoint :: Char -> Point
-toPoint 'N' = (0,1)
-toPoint 'S' = (0,-1)
-toPoint 'W' = (-1,0)
-toPoint 'E' = (1,0)
+toPoint 'N' = V2   0   1
+toPoint 'S' = V2   0 (-1)
+toPoint 'W' = V2 (-1)  0
+toPoint 'E' = V2   1   0
 
 dirToPoint :: MvDir -> Point
-dirToPoint N = (0,1)
-dirToPoint E = (1,0)
-dirToPoint S = (0,-1)
-dirToPoint W = (-1,0)
+dirToPoint N = V2   0   1
+dirToPoint E = V2   1   0
+dirToPoint S = V2   0 (-1)
+dirToPoint W = V2 (-1)  0
 
 
 pointToDir :: Point -> MvDir
-pointToDir (0,1) = N
-pointToDir (0,-1) = S
-pointToDir (1,0) = E
-pointToDir (-1,0) = W
+pointToDir (V2   0   1 ) = N
+pointToDir (V2   0 (-1)) = S
+pointToDir (V2   1   0 ) = E
+pointToDir (V2 (-1)  0 ) = W
 
 toDeg :: MvDir -> Int
 toDeg N = 0

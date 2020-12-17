@@ -14,7 +14,7 @@ import Data.Maybe
 import Control.Monad.State
 import Parse
 import Data.List.Split (chunksOf)
-import Common ( Point, pAdd, pMul )
+import Linear ((^*), V2(V2))
 
 day11a :: String -> Int
 day11a = solveA . dayInput
@@ -39,7 +39,7 @@ data Env = E
     , eCheck  :: Env -> Int -> [Int]
     , eMinOcc :: Int
     }
-
+type Point = V2 Int
 type Seats = Map Point Bool
 type NMap = Map Point (Set Point)
 
@@ -69,10 +69,10 @@ changes :: Env -> Vector Bool
 changes e@E{..} = V.imap (willChange e) eSeats 
 
 toCheckA :: Env -> Int -> [Int]
-toCheckA E{..} n = map (idxFromPoint eWidth) $ filter (inBounds eWidth eHeight) $ map (pAdd (pointFromIdx eWidth n)) adjs
+toCheckA E{..} n = map (idxFromPoint eWidth) $ filter (inBounds eWidth eHeight) $ map (+ pointFromIdx eWidth n) adjs
 
 adjs :: [Point]
-adjs = [(x,y) | x <- [-1,0,1],
+adjs = [V2 x y | x <- [-1,0,1],
                 y <- [-1,0,1],
                 not (x == 0 && y == 0)]
 
@@ -88,18 +88,18 @@ checkDir' e@E{..} p d n
     | s == Occ   = Just x
     | s == Empty = Nothing
     | otherwise  = checkDir' e p d (n+1)
-    where p' = pAdd p $ pMul d (n,n)
+    where p' = p + (d ^* n)
           x  = idxFromPoint eWidth p'
           s  = eSeats V.! x
 
 idxFromPoint :: Int -> Point -> Int
-idxFromPoint w (x,y) = y * w + x
+idxFromPoint w (V2 x y) = y * w + x
 
 pointFromIdx :: Int -> Int -> Point
-pointFromIdx w n = (n `mod` w, n `quot` w)
+pointFromIdx w n = V2 (n `mod` w) (n `quot` w)
 
 inBounds :: Int -> Int -> Point -> Bool
-inBounds w h (x,y) = x >= 0 && x < w && y >= 0 && y < h
+inBounds w h (V2 x y) = x >= 0 && x < w && y >= 0 && y < h
 
 willChange :: Env -> Int -> Seat -> Bool
 willChange _       _   Floor = False

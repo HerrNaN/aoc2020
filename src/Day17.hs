@@ -3,32 +3,13 @@
 {-# LANGUAGE LambdaCase #-}
 module Day17 where
 
-import qualified Text.Parsec as P
 import qualified Data.Map as M
 import qualified Data.Set as S
-import Text.Parsec (Parsec)
 import Data.Map (Map)
 import Data.Set (Set)
-import qualified Data.Vector as Vec
-import Data.Functor
-import Control.Applicative
-import Parse
-import Common ( countTrue )
-import Data.Maybe
+import Data.Maybe ( catMaybes )
 import Linear.V3 ( V3(..) )
 import Linear.V4 ( V4(..) )
-import Linear.V
-import Linear (V2(V2))
-import Linear.V2
-import Control.Lens
-
--- type Point3 = V3 Int
--- type Point4 = V4 Int
--- type Space = Map Point3 Bool
-type Space n = V n Int
--- type Space3 = Map Point3 Bool
--- type Space4 = Map Point4 Bool
--- type Neighbours = Map (V3 Int) (Set (V3 Int))
 
 day17a :: String -> Int
 day17a = solveA . dayInput toV3
@@ -81,8 +62,8 @@ toV4 x y = V4 x y 1 1
 
 neighboursSet ::
     (Ord (t a), Traversable t, Applicative t, Num a, Num (t a))
-    => t a
-    -> Set (t a)
+    => t a       -- Point in space
+    -> Set (t a) -- All neighbours to the given point in space
 neighboursSet p = S.fromList
     [ p+d
     | d <- sequence (pure [-1,0,1])
