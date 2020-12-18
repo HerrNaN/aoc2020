@@ -27,6 +27,4 @@ solveB xs = x * y * z
                                       a+b+c==2020]
 
 dayInput :: String -> [Int]
-dayInput input = case parse (parseLines1 parseInt) input of
-    Right db -> db
-    Left e -> error $ show e
+dayInput = unsafeParse (parseLines1 parseInt)

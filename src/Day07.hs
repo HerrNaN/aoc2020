@@ -1,6 +1,6 @@
 module Day07 where
 
-import Text.Parsec hiding (parse)
+import Text.Parsec
 import Parse
 import qualified Data.Map.Strict as M
 import qualified Data.Set as S
@@ -47,9 +47,7 @@ countBags b m | bs /= [] = 1 + sum (map (\(n,b') -> n * countBags b' m) bs)
     where bs = m M.! b
 
 dayInput :: String -> [Rule]
-dayInput input = case parse rules input of
-    Right rs -> rs
-    Left  e  -> error $ show e
+dayInput = unsafeParse rules 
 
 type Rule = (Bag, [(Int, Bag)])
 type Bag = (String, String)

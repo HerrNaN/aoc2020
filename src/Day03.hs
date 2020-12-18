@@ -38,9 +38,7 @@ points col row rows = take (rows `quot` row) ps
     where ps = zip (map (col*) [0..]) $ map (row*) [0..]
 
 dayInput :: String -> Forest
-dayInput input = case parse parseForest input of
-    Right db -> db
-    Left e -> error $ show e
+dayInput = unsafeParse parseForest
 
 parseForest :: Parsec.Parsec String () Forest
 parseForest = parseLines1 parseEntry

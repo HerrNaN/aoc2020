@@ -24,4 +24,7 @@ solveB :: a -> b
 solveB = error "not implemented"
 
 dayInput :: String -> a
-dayInput input = error "not implemented"
+dayInput = unsafeParse rule
+
+rule :: Parsec String () a
+rule = error "not implemented"

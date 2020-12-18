@@ -93,15 +93,9 @@ hasPrefix p s
 dayInput :: String -> Document
 dayInput input = D rs' yt' nts'
     where [rs, yt, nts] = splitOn "\n\n" input
-          rs'  = case parse rules rs of
-                    Right rs'' -> rs''
-                    Left  e    -> error $ show e
-          yt'  = case parse yourTicket yt of
-                    Right yt'' -> yt''
-                    Left  e    -> error $ show e
-          nts' = case parse nearbyTickets nts of
-                    Right nts'' -> nts''
-                    Left  e    -> error $ show e
+          rs'  = unsafeParse rules rs
+          yt'  = unsafeParse yourTicket yt
+          nts' = unsafeParse nearbyTickets nts
 
 rules :: Parsec String () [Rule]
 rules = P.sepBy1 rule P.newline

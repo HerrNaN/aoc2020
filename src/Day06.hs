@@ -2,32 +2,26 @@
 module Day06 where
 
 import qualified Data.Set as S
-import Text.Parsec hiding ( parse )
-import Parse ( parse )
+import Text.Parsec
+import Parse ( unsafeParse )
 import Data.List.Split (splitOn)
 
 type Group = S.Set Char
 
 day06a :: String -> Int
-day06a = solveA . dayInput (parseGroup groupA)
+day06a = solveA . dayInput (unsafeParse groupA)
 
 solveA :: [Group] -> Int
 solveA = sum . map S.size
 
 day06b :: String -> Int
-day06b = solveB . dayInput (parseGroup groupB)
+day06b = solveB . dayInput (unsafeParse groupB)
 
 solveB :: [Group] -> Int
 solveB = sum . map S.size
 
 dayInput :: (String -> Group) -> String -> [Group]
 dayInput p = map p . splitOn "\n\n"
-
-parseGroup :: Parsec String () Group -> String -> Group
-parseGroup p input =
-    case parse p input of
-        Right gs -> gs
-        Left  e  -> error $ show e
 
 groupA :: Parsec String () Group
 groupA = do 

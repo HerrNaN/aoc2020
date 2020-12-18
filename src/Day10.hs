@@ -32,6 +32,4 @@ countWays 3 = 4
 countWays n = countWays (n-1) + countWays (n-2) + countWays (n-3)
 
 dayInput :: String -> [Int]
-dayInput input = case parse (P.sepEndBy1 parseInt P.newline) input of
-    Right is -> is
-    Left  e  -> error (show e)
+dayInput = unsafeParse (parseLines1 parseInt)

@@ -116,9 +116,7 @@ findWeakness' x s n
 
 
 dayInput :: String -> [Int]
-dayInput input = case parse ints input of
-    Right is -> is
-    Left e   -> error $ show e
+dayInput = unsafeParse ints
 
 ints :: Parsec String () [Int]
 ints = P.sepEndBy1 parseInt P.newline

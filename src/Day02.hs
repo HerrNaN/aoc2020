@@ -37,9 +37,7 @@ False `xor` True  = True
 _     `xor` _     = False
 
 dayInput :: String -> Database
-dayInput input = case parse parseDatabase input of
-    Right db -> db
-    Left e -> error $ show e
+dayInput = unsafeParse parseDatabase
 
 parseDatabase :: Parsec.Parsec String () Database
 parseDatabase = parseLines1 parseEntry

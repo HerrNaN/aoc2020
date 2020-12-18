@@ -51,9 +51,8 @@ chineseRemainder (residues, modulii)
         crtModulii = map (modPI `div`) modulii
 
 dayInput :: String -> (Integer, [Maybe Integer])
-dayInput input = case parse busTable input of
-                    Right x -> x
-                    Left  e -> error $ show e
+dayInput = unsafeParse busTable
+
 busTable :: Parsec String () (Integer, [Maybe Integer])
 busTable = do
     i <- parseInt

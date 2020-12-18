@@ -86,9 +86,7 @@ solveB :: [Passport] -> Int
 solveB = sum . map (fromEnum . isValidB)
 
 dayInput :: String -> [Passport]
-dayInput input = case parse parsePassports input of
-    Right ps -> ps
-    Left e -> error $ show e
+dayInput = unsafeParse parsePassports
 
 parsePassports :: Parsec.Parsec String () [Passport]
 parsePassports = Parsec.sepBy1 parsePassport parseBlankLine

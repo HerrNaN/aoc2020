@@ -110,9 +110,7 @@ fromDeg 180 = S
 fromDeg 270 = W
 
 dayInput :: String -> [Action]
-dayInput input = case parse actions input of
-                    Right as -> as
-                    Left e -> error $ show e
+dayInput = unsafeParse actions
 
 actions :: Parsec String () [Action]
 actions = P.sepEndBy1 action P.newline

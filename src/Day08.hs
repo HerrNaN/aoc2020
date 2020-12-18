@@ -134,14 +134,10 @@ line :: Int -> Env -> Instruction
 line n = fromJust . Seq.lookup n . eMemory
 
 dayInput' :: String -> Program'
-dayInput' input = case parse instructions input of
-    Right is -> Seq.fromList is
-    Left  e  -> error $ show e
+dayInput' = Seq.fromList . unsafeParse instructions
 
 dayInput :: String -> Program
-dayInput input = case parse instructions input of
-    Right is -> Seq.fromList $ zip [1..] is
-    Left  e  -> error $ show e
+dayInput = Seq.fromList . zip [1..] . unsafeParse instructions
 
 instructions :: Parsec String () [Instruction]
 instructions = P.sepEndBy1 instruction P.newline

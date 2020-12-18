@@ -77,9 +77,7 @@ insertMany []     _ m = m
 insertMany (a:as) v m = M.insert a v $ insertMany as v m
 
 dayInput :: String -> [Instruction]
-dayInput input = case parse instructions input of
-            Right is -> is
-            Left  e  -> error $ show e
+dayInput = unsafeParse instructions
 
 instructions :: Parsec String () [Instruction]
 instructions = P.sepEndBy1 instruction P.newline

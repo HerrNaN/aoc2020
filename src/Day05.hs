@@ -1,8 +1,8 @@
 {-# LANGUAGE FlexibleContexts #-}
 module Day05 where
 
-import Text.Parsec hiding (parse)
-import Parse ( parse )
+import Text.Parsec
+import Parse (unsafeParse)
 import Data.Functor (($>))
 import Data.List (sort)
 
@@ -40,9 +40,7 @@ keep (n,m) s | s == High = (n+d, m  )
 
 
 dayInput :: String -> [Pass]
-dayInput input = case parse passes input of
-    Right ps -> ps
-    Left  e  -> error $ show e
+dayInput = unsafeParse passes
 
 passes :: Parsec String () [Pass]
 passes = sepEndBy1 pass newline
