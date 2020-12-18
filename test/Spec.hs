@@ -72,9 +72,9 @@ tests = [
          ,(17,
             Just (show . day17a, "112" ),
             Just (show . day17b, "848" ))
-        --  ,(18,
-        --     Just (show . day18a, "165" ),
-        --     Just (show . day18b, "208" ))
+         ,(18,
+            Just (show . day18a, "13632" ),
+            Just (show . day18b, "23340" ))
         --  ,(19,
         --     Just (show . day19a, "165" ),
         --     Just (show . day19b, "208" ))

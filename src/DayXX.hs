@@ -24,4 +24,4 @@ solveB :: a -> b
 solveB = error "not implemented"
 
 dayInput :: String -> a
-dayInput = error "not implemented"
+dayInput input = error "not implemented"

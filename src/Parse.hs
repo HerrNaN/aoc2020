@@ -1,18 +1,23 @@
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Parse where
 
-import qualified Text.Parsec as Parsec
 import Data.Functor.Identity
+import Data.Void (Void)
+import Data.Text (Text)
+import qualified Text.Parsec as P 
+import Text.Parsec (option, char,  digit, string, many1, sepEndBy1, try )
+import Control.Applicative (Applicative(liftA2), (<|>))
 
 -- alias Parsec.parse for more concise usage in my examples:
-parse :: Parsec.Stream s Identity t => Parsec.Parsec s () a -> s -> Either Parsec.ParseError a
-parse rule = Parsec.parse rule "(source)"
+-- parse :: Stream s Identity t => Parsec s () a -> s -> Either ParseError a
+-- parse :: Parsec e s a -> s -> Either (ParseErrorBundle s e) a
+parse rule = P.parse rule "(source)"
 
-parseLines1 :: Parsec.Stream s m Char => Parsec.ParsecT s u m a -> Parsec.ParsecT s u m [a]
-parseLines1 rule = Parsec.sepEndBy1 rule $ Parsec.char '\n'
+-- parseLines1 :: Stream s m Char => ParsecT s u m a -> ParsecT s u m [a]
+-- parseLines1 :: (MonadParsec e s m, Token s ~ Char) => m a -> m [a]
+parseLines1 rule = sepEndBy1 rule P.newline
 
-parseInt :: Parsec.Parsec String () Int
-parseInt = do
-    neg <- Parsec.option "" (Parsec.string "-") 
-    digs <- Parsec.many1 Parsec.digit
-    return $ read $ neg ++ digs
+parseInt :: P.Parsec String () Int
+parseInt = read <$> liftA2 (:) (option ' ' (char '-')) (many1 digit)

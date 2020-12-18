@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2b4d6cb0b9499a0a6865ae59b6ac5658482767c2d019d4beea1d62da143472ff
+-- hash: 37ea120f31c3ea97dcc857bdfc7b8a39a5abd5cefe98333f78340d83f357b888
 
 name:           aoc
 version:        0.1.0.0
@@ -40,6 +40,7 @@ library
       Day15
       Day16
       Day17
+      Day18
       Days
       DayXX
       Input
@@ -59,6 +60,7 @@ library
     , monad-loops
     , mtl
     , parsec
+    , parser-combinators
     , split
     , text
     , time
@@ -88,6 +90,7 @@ executable aoc-exe
       Day15
       Day16
       Day17
+      Day18
       Days
       DayXX
       Input
@@ -109,6 +112,7 @@ executable aoc-exe
     , monad-loops
     , mtl
     , parsec
+    , parser-combinators
     , split
     , text
     , time
@@ -138,6 +142,7 @@ executable bench
       Day15
       Day16
       Day17
+      Day18
       Days
       DayXX
       Input
@@ -160,6 +165,7 @@ executable bench
     , monad-loops
     , mtl
     , parsec
+    , parser-combinators
     , split
     , text
     , time
@@ -190,6 +196,7 @@ test-suite aoc-test
       Day15
       Day16
       Day17
+      Day18
       Days
       DayXX
       Input
@@ -212,6 +219,7 @@ test-suite aoc-test
     , monad-loops
     , mtl
     , parsec
+    , parser-combinators
     , split
     , text
     , time
