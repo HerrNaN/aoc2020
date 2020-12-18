@@ -1,6 +1,3 @@
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE OverloadedStrings #-}
 module Day18 where
 
 import Prelude hiding (lex)
@@ -14,6 +11,7 @@ import Common
 import Text.Parsec ((<|>), (<?>), Parsec)
 import qualified Text.Parsec as P
 import Data.Char (digitToInt)
+import Advent.Types (Part(Part2, Part1))
 
 data Token = TInt Int | TOPar Int | TCPar Int | TMul | TAdd
     deriving Show
@@ -21,6 +19,8 @@ data BinOp = Mul | Add
     deriving Show
 data Exp = EOp BinOp Exp Exp | EPar Exp | EInt Int
     deriving Show
+
+type Grammar = Parsec String () Exp
 
 doOp :: BinOp -> (Int -> Int -> Int)
 doOp Mul = (*)
@@ -31,7 +31,7 @@ toOp '*' = Mul
 toOp '+' = Add
 
 day18a :: String -> Int
-day18a = solveA . dayInput "A"
+day18a = solveA . dayInput llExpr
 
 solveA :: [Exp] -> Int
 solveA = sum . map eval
@@ -42,73 +42,73 @@ eval (EPar e) = eval e
 eval (EOp op e e') = doOp op (eval e) (eval e')
 
 day18b :: String -> Int
-day18b = solveB . dayInput "B"
+day18b = solveB . dayInput withPresidance
 
 solveB :: [Exp] -> Int
 solveB = sum . map eval
 
-dayInput :: String -> String -> [Exp]
-dayInput p input = case parse (parseLines1 expr') input' of
-                    Right e -> e
-                    Left  e -> error $ show e
-    where input' = init $ unlines $ map (map swapParen . reverse) (lines input)
-          expr'  | p == "A" = expr
-                 | p == "B" = expr0
-          
+dayInput :: Grammar -> String -> [Exp]
+dayInput ex = unsafeParse (parseLines1 ex) . reverseExpr
 
+reverseExpr :: String -> String
+reverseExpr = init . unlines . map (map swapParen . reverse) . lines
+          
 swapParen :: Char -> Char
 swapParen '(' = ')'
 swapParen ')' = '('
-swapParen c   = c
+swapParen  c  =  c
+
+llExpr :: Grammar
+llExpr = expr
+
+withPresidance :: Grammar
+withPresidance = expr0
 
 expr :: Parsec String () Exp
 expr = do
-        P.try binop 
-    <|> P.try paren
-    <|> int
+        P.try (expr' `binop` expr)
+    <|> P.try (paren expr)
+    <|> P.try eint
+
+expr' :: Parsec String () Exp
+expr' = do
+        P.try eint
+    <|> P.try (paren expr)
+    <|> P.try (expr' `binop` expr)
 
 expr0 :: Parsec String () Exp
 expr0 = do 
-        P.try mul0
-    <|> expr1
+        P.try (expr0 `mul` expr1)
+    <|> P.try expr1
 
 expr1 :: Parsec String () Exp
-expr1 = P.try add1 <|> P.try expr2
+expr1 = P.try (expr1 `add` expr2)
+    <|> P.try expr2
 
 expr2 :: Parsec String () Exp
-expr2 = P.try int <|> paren0
+expr2 = P.try eint 
+    <|> P.try (paren expr0)
 
-int :: Parsec String () Exp
-int = EInt <$> parseInt
+eint :: Parsec String () Exp
+eint = EInt <$> parseInt
 
-paren0 :: Parsec String () Exp
-paren0 = do
-    P.char '('
-    e <- expr0
-    P.char ')'
-    return e
+paren :: Parsec String () Exp -> Parsec String () Exp
+paren ex = P.char '(' *> ex <* P.char ')'
 
-paren :: Parsec String () Exp
-paren = do
-    P.char '('
-    e <- expr
-    P.char ')'
-    return e
-
-binop :: Parsec String () Exp
-binop = do
-    e <- P.try int <|> P.try paren <|> binop 
+binop :: Parsec String () Exp -> Parsec String () Exp -> Parsec String () Exp
+binop ex ex' = do
+    e <- ex
     op <- P.space *> P.oneOf "+*" <* P.space
-    EOp (toOp op) e <$> expr
+    EOp (toOp op) e <$> ex'
 
-add1 :: Parsec String () Exp
-add1 = do
-    e <- expr2
+add :: Parsec String () Exp -> Parsec String () Exp -> Parsec String () Exp 
+add ex ex' = do
+    e <- ex'
     P.space >> P.char '+' >> P.space
-    EOp Add e <$> expr1
+    EOp Add e <$> ex
 
-mul0 :: Parsec String () Exp
-mul0 = do
-    e <- expr1
+mul :: Parsec String () Exp -> Parsec String () Exp -> Parsec String () Exp
+mul ex ex' = do
+    e <- ex'
     P.space >> P.char '*' >> P.space
-    EOp Mul e <$> expr0
+    EOp Mul e <$> ex

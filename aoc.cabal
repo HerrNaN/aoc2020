@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 37ea120f31c3ea97dcc857bdfc7b8a39a5abd5cefe98333f78340d83f357b888
+-- hash: e62670210bebfa19fc03b7605711e62f88962b74e7b00ffcc4dbd6128ed98731
 
 name:           aoc
 version:        0.1.0.0
@@ -54,6 +54,7 @@ library
     , base >=4.7 && <5
     , containers
     , directory
+    , either
     , http-conduit
     , lens
     , linear
@@ -106,6 +107,7 @@ executable aoc-exe
     , base >=4.7 && <5
     , containers
     , directory
+    , either
     , http-conduit
     , lens
     , linear
@@ -159,6 +161,7 @@ executable bench
     , containers
     , criterion
     , directory
+    , either
     , http-conduit
     , lens
     , linear
@@ -212,6 +215,7 @@ test-suite aoc-test
     , base >=4.7 && <5
     , containers
     , directory
+    , either
     , hspec
     , http-conduit
     , lens

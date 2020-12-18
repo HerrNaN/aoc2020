@@ -35,6 +35,7 @@ dependencies:
 - monad-loops
 - lens
 - parser-combinators
+- either
 
 library:
   source-dirs: src
