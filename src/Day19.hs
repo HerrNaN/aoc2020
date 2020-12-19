@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE TupleSections #-}
 module Day19 where
 
@@ -5,7 +6,7 @@ import qualified Text.Parsec as P
 import qualified Data.Map as M
 import qualified Data.IntMap as IM
 import qualified Data.Set as S
-import Text.Parsec (Parsec)
+import Text.Parsec ((<?>), Parsec)
 import Data.Map (Map)
 import Data.IntMap (IntMap)
 import Data.Set (Set)
@@ -14,6 +15,10 @@ import Control.Applicative
 import Parse
 import Common
 import Data.List.Split (splitOn)
+import Data.Either (isRight)
+import Data.Functor.Identity (Identity(Identity))
+import GHC.Conc (yield)
+import qualified Text.Regex.PCRE as R 
 
 type RuleMap = IntMap Rule
 type Rule = Either [[Int]] Char
@@ -22,36 +27,29 @@ day19a :: String -> Int
 day19a = solveA . dayInput
 
 solveA :: (RuleMap, [String]) -> Int
-solveA (rm,ms) = length $ filter (match 0 rm) ms
+solveA (rm,ms) = countTrue (`matchR` p) ms
+    where p = toRegex 0 rm
 
-match :: Int -> IntMap Rule -> String -> Bool
-match n rm s = s `S.member` vs
-    where vs = S.fromList $ resolveRule n rm
+matchR :: String -> String -> Bool
+matchR s r = s R.=~ ("^" ++ r ++ "$")
 
-resolveRule :: Int -> RuleMap -> [String]
-resolveRule n rm = case rm IM.! n of
-    Right c      -> [[c]]
-    Left [is]    -> foldl combined [] $ map (`resolveRule` rm) is
-    Left [is,js] -> foldl combined [] (concatRules rm is)
-                 ++ foldl combined [] (concatRules rm js)
+toRegex :: Int -> RuleMap -> String
+toRegex n rm = case rm IM.! n of
+    Right c       -> [c]
+    Left  [is]    -> "(" ++ concatMap (`toRegex` rm) is ++ ")"
+    Left  [is,js] -> "(" ++ concatMap (`toRegex` rm) is ++ "|" ++ concatMap (`toRegex` rm) js ++ ")"
 
-combined :: [String] -> [String] -> [String]
-combined []  []  = []
-combined []  bs  = bs
-combined as  []  = as
-combined [a] bs  = map (a ++) bs
-combined as  [b] = map (++ b) as
-combined as bs   = concatMap (\a -> combined [a] bs) as
-
-
-concatRules :: RuleMap -> [Int] -> [[String]]
-concatRules rm = map (`resolveRule` rm)
+toRegexB :: Int -> RuleMap -> String
+toRegexB 0 rm = "(" ++ toRegexB 8 rm ++ toRegexB 11 rm ++ ")"
+toRegexB 8 rm = "(" ++ toRegex 42 rm ++ "+)"
+toRegexB 11 rm = "(?'x'" ++ toRegex 42 rm ++ "(?P>x)?" ++ toRegex 31 rm ++ ")"
 
 day19b :: String -> Int
 day19b = solveB . dayInput
 
 solveB :: (RuleMap, [String]) -> Int
-solveB = error "not implemented"
+solveB (rm,ms) = length $ filter (`matchR` p) ms
+    where p = toRegexB 0 rm
 
 dayInput :: String -> (RuleMap, [String])
 dayInput input = (rs', lines ms)
@@ -67,6 +65,3 @@ rule = do
 
 subRule :: Parsec String () [Int]
 subRule = P.sepBy1 parseInt (P.notFollowedBy (P.string " | ") >> P.char ' ')
-
-
-

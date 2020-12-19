@@ -36,6 +36,9 @@ dependencies:
 - lens
 - parser-combinators
 - either
+- regex-tdfa
+- regex-posix
+- regex-pcre
 
 library:
   source-dirs: src

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: bc61d1fe7418c17124e13898ad73e0040c4e756fc250d897d505eefc67fba654
+-- hash: c7a0f53b3697978d41e7d25860cdbcd3d136a1d62efc83418a2b38b3a94025f1
 
 name:           aoc
 version:        0.1.0.0
@@ -63,6 +63,9 @@ library
     , mtl
     , parsec
     , parser-combinators
+    , regex-pcre
+    , regex-posix
+    , regex-tdfa
     , split
     , text
     , time
@@ -117,6 +120,9 @@ executable aoc-exe
     , mtl
     , parsec
     , parser-combinators
+    , regex-pcre
+    , regex-posix
+    , regex-tdfa
     , split
     , text
     , time
@@ -172,6 +178,9 @@ executable bench
     , mtl
     , parsec
     , parser-combinators
+    , regex-pcre
+    , regex-posix
+    , regex-tdfa
     , split
     , text
     , time
@@ -228,6 +237,9 @@ test-suite aoc-test
     , mtl
     , parsec
     , parser-combinators
+    , regex-pcre
+    , regex-posix
+    , regex-tdfa
     , split
     , text
     , time
