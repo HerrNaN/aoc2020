@@ -20,21 +20,34 @@ import Data.List.Split
 import Data.List
 import Data.Text (dropEnd)
 import Data.Maybe
+import Linear hiding (transpose)
+import Control.Lens
 
-
+type Point = V2 Int
+type Dims  = (Int, Int)
 type Border = String
 type Contents = [String]
 data Transformation = None | Rot90 | Rot180 | Rot270 | VFlip | HFlip
     deriving (Eq, Ord, Enum, Show)
-
+type Puzzle = Map Point Contents
+type Image  = [String]
 data Piece = P
     { pId :: Int
     , pBorders :: Map Transformation (Set Border)
     , pContents :: Map Transformation Contents
     } deriving (Eq, Show)
 
+
 type IPiece = (Int, [Int])
 type PID = Int
+
+monster :: [String]
+monster = [ "                  # "
+          , "#    ##    ##    ###"
+          , " #  #  #  #  #  #   " ]
+
+count :: Eq a => a -> [a] -> Int
+count a = countTrue (==a)
 
 day20a :: String -> Int
 day20a = solveA . dayInput
@@ -46,7 +59,17 @@ day20b :: String -> Int
 day20b = solveB . dayInput
 
 solveB :: [Piece] -> Int
-solveB = error "not implemented"
+solveB ps = ws - (nm * mws)
+    where img = toImage $ assemble ps
+          nm  = countMonsters img
+          ws  = count '#' $ unlines img
+          mws = count '#' $ unlines monster
+
+countMonsters :: Image -> Int
+countMonsters = error "not implemented"
+
+assemble :: [Piece] -> Puzzle
+assemble = error "not implemented"
 
 borderMap :: [Piece] -> Map Border [PID]
 borderMap = foldl addBorders M.empty
@@ -60,6 +83,21 @@ rotCw90 = transpose . reverse
 assemblePieces :: Set PID -> IntMap [PID] ->  [PID]
 assemblePieces pSet bm = []
     where (p:ps) = S.elems pSet
+
+validBordersMap :: [Piece] -> Map Border [PID]
+validBordersMap ps   = M.withoutKeys (borderMap ps) edges
+    where edges      = M.keysSet $ M.filter ((== 1) . length) $ borderMap ps
+          allBorders = M.keysSet $ borderMap ps
+
+groupByX :: [(Point, Contents)] -> [[(Point, Contents)]]
+groupByX = groupBy (\v v' -> (fst v ^._x) == (fst v' ^._x))
+
+toImage :: Puzzle -> Image
+toImage pzl = concatMap linkX $ groupByX $ M.toList pzl
+
+linkX :: [(Point, Contents)] -> [String]
+linkX ps = foldl (zipWith (++)) (repeat "") css
+    where css = map snd ps 
 
 {-|
   - Why does this work?
