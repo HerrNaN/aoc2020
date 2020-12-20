@@ -41,10 +41,31 @@ addBorders :: IntMap [Int] -> IPiece -> IntMap [Int]
 addBorders m (p, bs) = IM.unionWith (++) m $ IM.fromList $ zip bs $ repeat [p]
 
 {-|
-  Why does this work?
+  - Why does this work?
 
+  It works on the assumption that there is only one right fit
+  for a piece with any of the other pieces. So for example,
+  piece A only fits with piece B and only in one way.
+  The borders are a unique link between two pieces.
+
+  - How does it work?
+
+  First we map all the borders to a list of pieces.
+  This will allow us to lookup what pieces have a specific
+  border. Then we filter out all borders that aren't shared
+  between two pieces. Those should be the borders of the actual
+  puzzle. Now we get all the pieces that have these borders (the
+  edge pieces of the puzzle). We then need to find out which four of
+  these are the corner pieces. Naturally the corner pieces will have
+  two borders that aren't shared with any other piece so they should
+  appear two times (each) in the list of edge pieces (since every
+  occurance here represents having one unique border) and since we
+  allowed for rotations and flips we will have the flipped version of
+  each of the edge borders, so our corners will actially  appear
+  four times in total (each). Then we just get the actual ids of
+  the pieces.
 -}
-corners :: [IPiece] -> [Int]
+corners :: [IPiece] -> [Int]        
 corners = map head
         . filter ((== 4) . length)
         . group
