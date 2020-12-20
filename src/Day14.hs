@@ -8,6 +8,7 @@ import qualified Text.Parsec as P
 import Numeric (showIntAtBase)
 import Data.Char (digitToInt, intToDigit)
 import Parse
+import Common
 
 type Addr = Integer
 type Mask = String
@@ -31,12 +32,6 @@ doInstr :: Prog -> Instruction -> Prog
 doInstr p@P{..} (SetMask m')       = p{_mask=m'}
 doInstr p@P{..} (WriteTo addr val) = p{_mem=mem'}
     where mem' = M.insert addr (applyMask partABit _mask (toBin val)) _mem
-
-fromBin :: String -> Integer
-fromBin s = sum $ zipWith (*) (map toInteger $ reverse (map digitToInt s)) $ map (2^) [0..]
-
-toBin :: Integer -> String
-toBin i = showIntAtBase 2 intToDigit i ""
 
 applyMask :: (Char -> Char -> Char) -> Mask -> String -> String
 applyMask f m s = zipWith f m s'

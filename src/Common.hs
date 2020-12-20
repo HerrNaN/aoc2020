@@ -10,7 +10,9 @@ module Common (
     Vector2D,
     mkVec2D,
     asciiGrid0,
-    asciiGrid1
+    asciiGrid1,
+    fromBin,
+    toBin
 ) where
 
 import qualified Data.Map as Map
@@ -22,6 +24,9 @@ import qualified Data.Vector as Vec
 import Data.List (group)
 import Data.Foldable (Foldable(toList))
 import Linear.V2
+import Numeric (showIntAtBase)
+import Data.Char (intToDigit)
+import Data.Text.Internal.Read (digitToInt)
 
 freq :: Ord a => [a] -> Map a Int
 freq = Map.fromListWith (+) . map (,1)
@@ -67,3 +72,9 @@ asciiGrid0 = asciiGrid' 0
 
 asciiGrid1 :: String -> Map (Int, Int) Char
 asciiGrid1 = asciiGrid' 0
+
+fromBin :: String -> Integer
+fromBin s = sum $ zipWith (*) (map toInteger $ reverse (map digitToInt s)) $ map (2^) [0..]
+
+toBin :: Integer -> String
+toBin i = showIntAtBase 2 intToDigit i ""
