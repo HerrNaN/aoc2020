@@ -1,3 +1,5 @@
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Day20 where
 
@@ -16,29 +18,48 @@ import Parse
 import Common
 import Data.List.Split
 import Data.List
+import Data.Text (dropEnd)
+import Data.Maybe
 
 
 type Border = String
-type Piece  = (Int, [Border])
+type Contents = [String]
+data Transformation = None | Rot90 | Rot180 | Rot270 | VFlip | HFlip
+    deriving (Eq, Ord, Enum, Show)
+
+data Piece = P
+    { pId :: Int
+    , pBorders :: Map Transformation (Set Border)
+    , pContents :: Map Transformation Contents
+    } deriving (Eq, Show)
+
 type IPiece = (Int, [Int])
+type PID = Int
 
 day20a :: String -> Int
 day20a = solveA . dayInput
 
-solveA :: [IPiece] -> Int
+solveA :: [Piece] -> Int
 solveA = product . corners
 
 day20b :: String -> Int
 day20b = solveB . dayInput
 
-solveB :: [IPiece] -> Int
+solveB :: [Piece] -> Int
 solveB = error "not implemented"
 
-borderMap :: [IPiece] -> IntMap [Int]
-borderMap = foldl addBorders IM.empty
+borderMap :: [Piece] -> Map Border [PID]
+borderMap = foldl addBorders M.empty
 
-addBorders :: IntMap [Int] -> IPiece -> IntMap [Int]
-addBorders m (p, bs) = IM.unionWith (++) m $ IM.fromList $ zip bs $ repeat [p]
+addBorders :: Map Border [PID] -> Piece -> Map Border [PID]
+addBorders m P{..} = M.unionWith (++) m $ M.fromList $ zip (S.elems $ S.unions $ M.elems pBorders) (repeat [pId])
+
+rotCw90 :: [[a]] -> [[a]]
+rotCw90 = transpose . reverse
+
+assemblePieces :: Set PID -> IntMap [PID] ->  [PID]
+assemblePieces pSet bm = []
+    where (p:ps) = S.elems pSet
 
 {-|
   - Why does this work?
@@ -65,36 +86,55 @@ addBorders m (p, bs) = IM.unionWith (++) m $ IM.fromList $ zip bs $ repeat [p]
   four times in total (each). Then we just get the actual ids of
   the pieces.
 -}
-corners :: [IPiece] -> [Int]        
+corners :: [Piece] -> [PID]
 corners = map head
         . filter ((== 4) . length)
         . group
         . sort
         . concat
-        . IM.elems
-        . IM.filter ((== 1) . length)
+        . M.elems
+        . M.filter ((== 1) . length)
         . borderMap
 
+-- This conversion shouldn't be neccesary but helps alot with debugging 
 borderToInt :: Border -> Int
 borderToInt = fromInteger . fromBin . map (\c -> if c == '#' then '1' else '0')
 
-dayInput :: String -> [IPiece]
+dayInput :: String -> [Piece]
 dayInput i = ps'
     where ps = splitOn "\n\n" (T.unpack (T.strip $ T.pack i))
           ps' = map (parsePiece . lines) ps
 
-parsePiece :: [String] -> (Int, [Int])
-parsePiece []     = error "trying to parse piece from empty list"
-parsePiece (l:ls) = (pid, bs)
-    where pid = unsafeParse pieceId l
-          bs  = borders ls
+parsePiece :: [String] -> Piece
+parsePiece (l:ls) = mkPiece pId ls
+    where pId = unsafeParse pid l
+          
+stripBorders :: [String] -> [String]
+stripBorders = map (init . tail) . init . tail
 
-borders :: [String] -> [Int]
-borders ss = map borderToInt [top, reverse top, left, reverse left, right, reverse right, bottom, reverse bottom]
-    where top    = head ss
-          left   = head $ transpose ss
-          right  = last $ transpose ss
-          bottom = last ss
+mkPiece :: PID -> Contents -> Piece
+mkPiece pId cs = P
+    { pId=pId
+    , pBorders=bm
+    , pContents=cm
+    }
+    where cm = M.fromList $ zip [None ..] $ map (`doTransform` cs) [None ..]
+          bm = M.map (S.fromList . borders) cm
 
-pieceId :: Parsec String () Int
-pieceId = P.between (P.string "Tile ") (P.string ":") parseInt
+doTransform :: Transformation -> Contents -> Contents
+doTransform None   = id
+doTransform Rot90  = (!! 1) . iterate rotCw90
+doTransform Rot180 = (!! 2) . iterate rotCw90
+doTransform Rot270 = (!! 3) . iterate rotCw90
+doTransform HFlip  = reverse
+doTransform VFlip  = map reverse
+
+possibleBorders :: [Border] -> [Border]
+possibleBorders ss = map reverse bs ++ bs
+    where bs = borders ss
+
+borders :: [String] -> [Border]
+borders ss = map head $ take 4 $ drop 1 $ iterate rotCw90 ss
+
+pid :: Parsec String () Int
+pid = P.between (P.string "Tile ") (P.string ":") parseInt
