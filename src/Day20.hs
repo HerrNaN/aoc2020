@@ -31,23 +31,15 @@ data Transformation = None | Rot90 | Rot180 | Rot270 | VFlip | HFlip | Rot90HFli
     deriving (Eq, Ord, Enum, Show)
 type Puzzle = Map Point Contents
 type Image  = [String]
-data Piece = P
-    { pId :: Int
-    , pBorders :: Map Transformation (Set Border)
-    , pContents :: Map Transformation Contents
-    } deriving (Eq, Show)
-
-data PPiece = PP
+data Piece = PP
     { ppId :: PID
     , ppEdges :: Set Edge
     , ppContents :: Contents
     } deriving (Eq, Show)
 type Edge = (Side, Border)
-
 data Side = Up | Down | Right | Left
     deriving (Show, Ord, Eq, Enum)
 type PID = Int
-type ConnectionMap = Map Edge (Set Piece)
 
 opp :: Side -> Side
 opp Up    = Down
@@ -72,13 +64,13 @@ count a = countTrue (==a)
 day20a :: String -> Int
 day20a = solveA . dayInput
 
-solveA :: [PPiece] -> Int
-solveA = product . corners'
+solveA :: [Piece] -> Int
+solveA = product . corners
 
 day20b :: String -> Int
 day20b = solveB . dayInput
 
-solveB :: [PPiece] -> Int
+solveB :: [Piece] -> Int
 solveB ps = ws - (nm * mws)
     where img = toImage $ assemble ps
           nm  = countMonsters img
@@ -88,14 +80,8 @@ solveB ps = ws - (nm * mws)
 countMonsters :: Image -> Int
 countMonsters = error "not implemented"
 
-assemble :: [PPiece] -> Puzzle
+assemble :: [Piece] -> Puzzle
 assemble = error "not implemented"
-
-borderMap :: [Piece] -> Map Border [PID]
-borderMap = foldl addBorders M.empty
-
-addBorders :: Map Border [PID] -> Piece -> Map Border [PID]
-addBorders m P{..} = M.unionWith (++) m $ M.fromList $ zip (S.elems $ S.unions $ M.elems pBorders) (repeat [pId])
 
 rotCw90 :: [[a]] -> [[a]]
 rotCw90 = transpose . reverse
@@ -104,10 +90,10 @@ assemblePieces :: Set PID -> IntMap [PID] ->  [PID]
 assemblePieces pSet bm = []
     where (p:ps) = S.elems pSet
 
-validBordersMap :: [Piece] -> Map Border [PID]
-validBordersMap ps   = M.withoutKeys (borderMap ps) edges
-    where edges      = M.keysSet $ M.filter ((== 1) . length) $ borderMap ps
-          allBorders = M.keysSet $ borderMap ps
+-- validBordersMap :: [Piece] -> Map Border [PID]
+-- validBordersMap ps   = M.withoutKeys (borderMap ps) edges
+--     where edges      = M.keysSet $ M.filter ((== 1) . length) $ borderMap ps
+--           allBorders = M.keysSet $ borderMap ps
 
 groupByX :: [(Point, Contents)] -> [[(Point, Contents)]]
 groupByX = groupBy (\v v' -> (fst v ^._x) == (fst v' ^._x))
@@ -119,91 +105,43 @@ linkX :: [(Point, Contents)] -> [String]
 linkX ps = foldl (zipWith (++)) (repeat "") css
     where css = map snd ps 
 
-{-|
-  - Why does this work?
-
-  It works on the assumption that there is only one right fit
-  for a piece with any of the other pieces. So for example,
-  piece A only fits with piece B and only in one way.
-  The borders are a unique link between two pieces.
-
-  - How does it work?
-
-  First we map all the borders to a list of pieces.
-  This will allow us to lookup what pieces have a specific
-  border. Then we filter out all borders that aren't shared
-  between two pieces. Those should be the borders of the actual
-  puzzle. Now we get all the pieces that have these borders (the
-  edge pieces of the puzzle). We then need to find out which four of
-  these are the corner pieces. Naturally the corner pieces will have
-  two borders that aren't shared with any other piece so they should
-  appear two times (each) in the list of edge pieces (since every
-  occurance here represents having one unique border) and since we
-  allowed for rotations and flips we will have the flipped version of
-  each of the edge borders, so our corners will actially  appear
-  four times in total (each). Then we just get the actual ids of
-  the pieces.
--}
--- corners :: [PPiece] -> [PID]
--- corners = map head
---         . filter ((== 4) . length)
---         . group
---         . sort
---         . concat
---         . M.elems
---         . M.filter ((== 1) . length)
---         . borderMap
-
-corners' :: [PPiece] -> [PID]
-corners' pps = S.toList $ S.fromList $ map ppId $ filter (isCorner em) pps
+corners :: [Piece] -> [PID]
+corners pps = S.toList $ S.fromList $ map ppId $ filter (isCorner em) pps
     where em = edgeMap pps
 
-isCorner :: Map Edge [PID] -> PPiece -> Bool
+isCorner :: Map Edge [PID] -> Piece -> Bool
 isCorner em pp = 2 == numberOfUsableEdges em pp
 
-numberOfUsableEdges :: Map Edge [PID] -> PPiece -> Int
+numberOfUsableEdges :: Map Edge [PID] -> Piece -> Int
 numberOfUsableEdges em PP{..} = length $ S.filter (\(s,b) -> length (em M.! (opp s, b)) > 1) ppEdges
 
-edgeMap :: [PPiece] -> Map Edge [PID]
+edgeMap :: [Piece] -> Map Edge [PID]
 edgeMap = foldl addEdges M.empty
 
-addEdges :: Map Edge [PID] -> PPiece -> Map Edge [PID]
+addEdges :: Map Edge [PID] -> Piece -> Map Edge [PID]
 addEdges em PP{..} = M.unionWith (++) em $ M.fromList $ zip (S.elems ppEdges) $ repeat [ppId]
 
 -- This conversion shouldn't be neccesary but helps alot with debugging 
 borderToInt :: Border -> Int
 borderToInt = fromInteger . fromBin . map (\c -> if c == '#' then '1' else '0')
 
-dayInput :: String -> [PPiece]
+dayInput :: String -> [Piece]
 dayInput i = ps'
     where ps = splitOn "\n\n" (T.unpack (T.strip $ T.pack i))
-          ps' = concatMap (parsePPieces . lines) ps
+          ps' = concatMap (parsePieces . lines) ps
 
-parsePiece :: [String] -> Piece
-parsePiece (l:ls) = mkPiece pId ls
-    where pId = unsafeParse pid l
-
-parsePPieces :: [String] -> [PPiece]
-parsePPieces (l:ls) = fromTemplate pId ls
+parsePieces :: [String] -> [Piece]
+parsePieces (l:ls) = fromTemplate pId ls
     where pId = unsafeParse pid l
           
 stripBorders :: [String] -> [String]
 stripBorders = map (init . tail) . init . tail
 
-mkPiece :: PID -> Contents -> Piece
-mkPiece pId cs = P
-    { pId=pId
-    , pBorders=bm
-    , pContents=cm
-    }
-    where cm = M.fromList $ zip [None ..] $ map (`doTransform` cs) [None ..]
-          bm = M.map (S.fromList . borders) cm
+fromTemplate :: PID -> Contents -> [Piece]
+fromTemplate pId cs = map (mkPiece pId cs) [None ..]
 
-fromTemplate :: PID -> Contents -> [PPiece]
-fromTemplate pId cs = map (mkPPiece pId cs) [None ..]
-
-mkPPiece :: PID -> Contents -> Transformation -> PPiece
-mkPPiece pId cs t = PP pId es cs'
+mkPiece :: PID -> Contents -> Transformation -> Piece
+mkPiece pId cs t = PP pId es cs'
     where cs' = doTransform t cs
           es  = edges cs'
 
