@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE TupleSections #-}
 module Common (
+    trace',
     freq,
     firstRepeat,
     fixedPoint,
@@ -13,7 +14,8 @@ module Common (
     asciiGrid0',
     asciiGrid1,
     fromBin,
-    toBin
+    toBin,
+    remove
 ) where
 
 import qualified Data.Map as Map
@@ -28,6 +30,10 @@ import Linear.V2
 import Numeric (showIntAtBase)
 import Data.Char (intToDigit)
 import Data.Text.Internal.Read (digitToInt)
+import Debug.Trace (trace)
+
+trace' :: Show a => a -> a
+trace' a = trace (show a) a
 
 freq :: Ord a => [a] -> Map a Int
 freq = Map.fromListWith (+) . map (,1)
@@ -82,3 +88,6 @@ fromBin s = sum $ zipWith (*) (map toInteger $ reverse (map digitToInt s)) $ map
 
 toBin :: Integer -> String
 toBin i = showIntAtBase 2 intToDigit i ""
+
+remove :: Eq a => a -> [a] -> [a]
+remove x = filter (/=x)

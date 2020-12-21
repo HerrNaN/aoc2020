@@ -20,9 +20,10 @@ import Data.List.Split
 import Data.List
 import Data.Text (dropEnd)
 import Data.Maybe
-import Linear hiding (transpose)
+import Linear hiding (transpose, trace)
 import Control.Lens
 import Prelude hiding (Right, Left)
+import Debug.Trace (trace)
 
 type Point = V2 Int
 type Border = String
@@ -31,7 +32,7 @@ data Transformation = None | Rot90 | Rot180 | Rot270 | VFlip | HFlip | Rot90HFli
     deriving (Eq, Ord, Enum, Show)
 type Puzzle = Map Point Piece
 type Image  = [String]
-data Piece = PP
+data Piece = P
     { pId       :: PID
     , pEdges    :: Set Edge
     , pContents :: Contents
@@ -94,21 +95,46 @@ isAMonsterAt :: Set (V2 Int) -> V2 Int -> Bool
 isAMonsterAt ws w = all ((`S.member` ws) . (+w)) monsterCoords
 
 assemble :: [Piece] -> Puzzle
-assemble ps = snd $ iterate addPiece (em, M.singleton (V2 0 0) (head ps)) !! length ps
+assemble (p:ps) = snd $ iterate addPiece (em, M.singleton (V2 0 0) p) !! length ps
     where em = edgeMap ps
 
 addPiece :: (Map Edge [Piece], Puzzle) -> (Map Edge [Piece], Puzzle)
 addPiece (em, pzl) = (em', pzl')
-    where em'  = error "not implemented"
-          pzl' = error "not implemented"
-          e    = chooseEdge em pzl
-          p    = getPiece e em pzl
+    where (pos, e) = chooseEdge em pzl         -- Choose an edge in the puzzle to find a piece for
+          p        = pickPiece (trace' (pos, e)) em pzl -- Pick out the piece for the chosen edge
+          em'      = removePieceFrom p em      -- Remove piece from edgemap 
+          pzl'     = addPieceAt pos e p pzl
 
-getPiece :: t0 -> Map Edge [Piece] -> Puzzle -> t
-getPiece = error "not implemented"
+pickPiece :: (Point, Edge) -> Map Edge [Piece] -> Puzzle -> Piece
+pickPiece (pos, e) em pzl = p'
+    where ps   = em M.! e
+          pid' = pId (pzl M.! pos)
+          ps'  = filter ((/= pid') . pId) ps
+          p'   = head ps'
 
-chooseEdge :: Map Edge [Piece] -> Puzzle -> t
-chooseEdge = error "not implemented"
+addPieceAt :: Point -> Edge -> Piece -> Puzzle -> Puzzle
+addPieceAt pos (s,_) = M.insert pos'
+    where pos' = pos + fromSide s
+    
+
+removePieceFrom :: Piece -> Map Edge [Piece] -> Map Edge [Piece]
+removePieceFrom p = M.map (filter ((/=pId p) . pId))
+
+chooseEdge :: Map Edge [Piece] -> Puzzle -> (Point, Edge)
+chooseEdge em pzl = (pos, head edges)
+    where es = danglingEdges em pzl
+          (pos, edges) = head es
+
+danglingEdges :: Map Edge [Piece] -> Puzzle -> [(Point, [Edge])]
+danglingEdges em = M.toList . M.filter (not . null) . M.map (danglingEdges' em)
+
+danglingEdges' :: Map Edge [Piece] -> Piece -> [Edge]
+danglingEdges' em P{..} = S.toList $ S.filter (isJust . fitsWithARemainingPiece pId em) pEdges
+
+fitsWithARemainingPiece :: PID -> Map Edge [Piece] -> Edge -> Maybe Edge
+fitsWithARemainingPiece thisPID em (s,b) = if any ((/=thisPID) . pId) es then Just e else Nothing
+    where es = em M.! e
+          e = (opp s, b)
 
 rotCw90 :: [[a]] -> [[a]]
 rotCw90 = transpose . reverse
@@ -135,13 +161,13 @@ isCorner :: Map Edge [Piece] -> Piece -> Bool
 isCorner em pp = 2 == numberOfUsableEdges em pp
 
 numberOfUsableEdges :: Map Edge [Piece] -> Piece -> Int
-numberOfUsableEdges em PP{..} = length $ S.filter (\(s,b) -> length (em M.! (opp s, b)) > 1) pEdges
+numberOfUsableEdges em P{..} = length $ S.filter (\(s,b) -> length (em M.! (opp s, b)) > 1) pEdges
 
 edgeMap :: [Piece] -> Map Edge [Piece]
 edgeMap = foldl addEdges M.empty
 
 addEdges :: Map Edge [Piece] -> Piece -> Map Edge [Piece]
-addEdges em p@PP{..} = M.unionWith (++) em $ M.fromList $ zip (S.elems pEdges) $ repeat [p]
+addEdges em p@P{..} = M.unionWith (++) em $ M.fromList $ zip (S.elems pEdges) $ repeat [p]
 
 -- This conversion shouldn't be neccesary but helps alot with debugging 
 borderToInt :: Border -> Int
@@ -163,7 +189,7 @@ fromTemplate :: PID -> Contents -> [Piece]
 fromTemplate pId cs = map (mkPiece pId cs) [None ..]
 
 mkPiece :: PID -> Contents -> Transformation -> Piece
-mkPiece pId cs t = PP pId es cs'
+mkPiece pId cs t = P pId es cs'
     where cs' = doTransform t cs
           es  = edges cs'
 
