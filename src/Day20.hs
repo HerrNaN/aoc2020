@@ -29,23 +29,32 @@ type Border = String
 type Contents = [String]
 data Transformation = None | Rot90 | Rot180 | Rot270 | VFlip | HFlip | Rot90HFlip | Rot90VFlip
     deriving (Eq, Ord, Enum, Show)
-type Puzzle = Map Point Contents
+type Puzzle = Map Point Piece
 type Image  = [String]
 data Piece = PP
-    { ppId :: PID
-    , ppEdges :: Set Edge
-    , ppContents :: Contents
+    { pId       :: PID
+    , pEdges    :: Set Edge
+    , pContents :: Contents
     } deriving (Eq, Show)
+
 type Edge = (Side, Border)
 data Side = Up | Down | Right | Left
     deriving (Show, Ord, Eq, Enum)
 type PID = Int
 
 opp :: Side -> Side
-opp Up    = Down
-opp Down  = Up
-opp Left  = Right
-opp Right = Left
+opp = \case
+    Up    -> Down
+    Down  -> Up
+    Left  -> Right
+    Right -> Left
+
+fromSide :: Side -> V2 Int
+fromSide = \case 
+    Up    -> V2 0 1
+    Down  -> V2 0 (-1)
+    Right -> V2 1 0
+    Left  -> V2 (-1) 0
 
 monster :: [String]
 monster = [ "                  # "
@@ -53,8 +62,8 @@ monster = [ "                  # "
           , " #  #  #  #  #  #   " ]
 
 -- With a center point on the end of the tail
-monsterCoords :: [V2 Integer]
-monsterCoords = [V2 18 1 
+monsterCoords :: [V2 Int]
+monsterCoords = [V2 18 (-1) 
                 ,V2 0 0, V2 5 0, V2 6 0, V2 11 0, V2 12 0, V2 17 0, V2 18 0, V2 19 0
                 ,V2 1 1, V2 4 1, V2 7 1, V2 10 1, V2 13 1, V2 16 1]
 
@@ -78,10 +87,28 @@ solveB ps = ws - (nm * mws)
           mws = count '#' $ unlines monster
 
 countMonsters :: Image -> Int
-countMonsters = error "not implemented"
+countMonsters img = count True $ S.toList $ S.map (isAMonsterAt ws) ws
+    where ws = M.keysSet $ M.filter (== '#') $ asciiGrid0' $ unlines img
+
+isAMonsterAt :: Set (V2 Int) -> V2 Int -> Bool
+isAMonsterAt ws w = all ((`S.member` ws) . (+w)) monsterCoords
 
 assemble :: [Piece] -> Puzzle
-assemble = error "not implemented"
+assemble ps = snd $ iterate addPiece (em, M.singleton (V2 0 0) (head ps)) !! length ps
+    where em = edgeMap ps
+
+addPiece :: (Map Edge [Piece], Puzzle) -> (Map Edge [Piece], Puzzle)
+addPiece (em, pzl) = (em', pzl')
+    where em'  = error "not implemented"
+          pzl' = error "not implemented"
+          e    = chooseEdge em pzl
+          p    = getPiece e em pzl
+
+getPiece :: t0 -> Map Edge [Piece] -> Puzzle -> t
+getPiece = error "not implemented"
+
+chooseEdge :: Map Edge [Piece] -> Puzzle -> t
+chooseEdge = error "not implemented"
 
 rotCw90 :: [[a]] -> [[a]]
 rotCw90 = transpose . reverse
@@ -90,36 +117,31 @@ assemblePieces :: Set PID -> IntMap [PID] ->  [PID]
 assemblePieces pSet bm = []
     where (p:ps) = S.elems pSet
 
--- validBordersMap :: [Piece] -> Map Border [PID]
--- validBordersMap ps   = M.withoutKeys (borderMap ps) edges
---     where edges      = M.keysSet $ M.filter ((== 1) . length) $ borderMap ps
---           allBorders = M.keysSet $ borderMap ps
-
 groupByX :: [(Point, Contents)] -> [[(Point, Contents)]]
 groupByX = groupBy (\v v' -> (fst v ^._x) == (fst v' ^._x))
 
 toImage :: Puzzle -> Image
-toImage pzl = concatMap linkX $ groupByX $ M.toList pzl
+toImage pzl = concatMap linkX $ groupByX $ M.toList $ M.map pContents pzl
 
 linkX :: [(Point, Contents)] -> [String]
 linkX ps = foldl (zipWith (++)) (repeat "") css
     where css = map snd ps 
 
 corners :: [Piece] -> [PID]
-corners pps = S.toList $ S.fromList $ map ppId $ filter (isCorner em) pps
-    where em = edgeMap pps
+corners ps = S.toList $ S.fromList $ map pId $ filter (isCorner em) ps
+    where em = edgeMap ps
 
-isCorner :: Map Edge [PID] -> Piece -> Bool
+isCorner :: Map Edge [Piece] -> Piece -> Bool
 isCorner em pp = 2 == numberOfUsableEdges em pp
 
-numberOfUsableEdges :: Map Edge [PID] -> Piece -> Int
-numberOfUsableEdges em PP{..} = length $ S.filter (\(s,b) -> length (em M.! (opp s, b)) > 1) ppEdges
+numberOfUsableEdges :: Map Edge [Piece] -> Piece -> Int
+numberOfUsableEdges em PP{..} = length $ S.filter (\(s,b) -> length (em M.! (opp s, b)) > 1) pEdges
 
-edgeMap :: [Piece] -> Map Edge [PID]
+edgeMap :: [Piece] -> Map Edge [Piece]
 edgeMap = foldl addEdges M.empty
 
-addEdges :: Map Edge [PID] -> Piece -> Map Edge [PID]
-addEdges em PP{..} = M.unionWith (++) em $ M.fromList $ zip (S.elems ppEdges) $ repeat [ppId]
+addEdges :: Map Edge [Piece] -> Piece -> Map Edge [Piece]
+addEdges em p@PP{..} = M.unionWith (++) em $ M.fromList $ zip (S.elems pEdges) $ repeat [p]
 
 -- This conversion shouldn't be neccesary but helps alot with debugging 
 borderToInt :: Border -> Int

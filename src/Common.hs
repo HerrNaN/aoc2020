@@ -10,6 +10,7 @@ module Common (
     Vector2D,
     mkVec2D,
     asciiGrid0,
+    asciiGrid0',
     asciiGrid1,
     fromBin,
     toBin
@@ -65,13 +66,16 @@ mkVec2D w h = Vec2D
     }
 
 asciiGrid' :: Int -> String -> Map (Int, Int) Char
-asciiGrid' n = Map.fromList . concatMap (\(x, s) -> zipWith (\y c -> ((x,y),c)) [n..] s) . zip [n..] . lines
+asciiGrid' n = Map.fromList . concatMap (\(y, s) -> zipWith (\x c -> ((x,y),c)) [n..] s) . zip [n..] . lines
 
 asciiGrid0 :: String -> Map (Int, Int) Char
 asciiGrid0 = asciiGrid' 0
 
+asciiGrid0' :: String -> Map (V2 Int) Char
+asciiGrid0' = Map.mapKeys (uncurry V2) . asciiGrid' 0
+
 asciiGrid1 :: String -> Map (Int, Int) Char
-asciiGrid1 = asciiGrid' 0
+asciiGrid1 = asciiGrid' 1
 
 fromBin :: String -> Integer
 fromBin s = sum $ zipWith (*) (map toInteger $ reverse (map digitToInt s)) $ map (2^) [0..]
