@@ -3,6 +3,7 @@
 {-# LANGUAGE TupleSections #-}
 module Common (
     trace',
+    traceLabel,
     freq,
     firstRepeat,
     fixedPoint,
@@ -34,6 +35,9 @@ import Debug.Trace (trace)
 
 trace' :: Show a => a -> a
 trace' a = trace (show a) a
+
+traceLabel :: Show a => String ->  a -> a
+traceLabel l a = trace (l ++ show a) a
 
 freq :: Ord a => [a] -> Map a Int
 freq = Map.fromListWith (+) . map (,1)

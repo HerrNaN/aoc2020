@@ -80,7 +80,7 @@ tests = [
             Just (show . day19b, "12" ))
          ,(20,
             Just (show . day20a, "20899048083289" ),
-            Just (show . day20b, "208" ))
+            Just (show . day20b, "273" ))
         --  ,(21,
         --     Just (show . day21a, "165" ),
         --     Just (show . day21b, "208" ))
