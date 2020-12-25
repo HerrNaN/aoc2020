@@ -41,8 +41,8 @@ module Days (
     day20b,
     day21a,
     day21b,
-    -- day22a,
-    -- day22b,
+    day22a,
+    day22b,
     -- day23a,
     -- day23b,
     -- day24a,
@@ -72,7 +72,7 @@ import Day18
 import Day19
 import Day20
 import Day21
--- import Day22
+import Day22
 -- import Day23
 -- import Day24
 -- import Day25
