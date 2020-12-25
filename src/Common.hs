@@ -8,6 +8,7 @@ module Common (
     firstRepeat,
     fixedPoint,
     countTrue,
+    count,
     steps,
     Vector2D,
     mkVec2D,
@@ -61,6 +62,9 @@ steps f s = s : steps f s'
 
 countTrue :: (Foldable f) => (a -> Bool) -> f a -> Int
 countTrue p = length . filter p . toList
+
+count :: Eq a => a -> [a] -> Int
+count a = countTrue (==a)
 
 data Vector2D a = Vec2D
     { _vec :: Vector a

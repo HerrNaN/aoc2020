@@ -68,9 +68,6 @@ monsterCoords = [V2 18 (-1)
                 ,V2 0 0, V2 5 0, V2 6 0, V2 11 0, V2 12 0, V2 17 0, V2 18 0, V2 19 0
                 ,V2 1 1, V2 4 1, V2 7 1, V2 10 1, V2 13 1, V2 16 1]
 
-count :: Eq a => a -> [a] -> Int
-count a = countTrue (==a)
-
 day20a :: String -> Int
 day20a = solveA . dayInput
 
@@ -82,7 +79,7 @@ day20b = solveB . dayInput
 
 solveB :: [Piece] -> Int
 solveB ps = ws - (nm * mws)
-    where img = trace' $ toImage $ assemble ps
+    where img = toImage $ assemble ps
           pImgs = map (`doTransform` img) [None ..]
           nm  = maximum $ map countMonsters pImgs
           ws  = count '#' $ unlines img
@@ -96,12 +93,12 @@ isAMonsterAt :: Set (V2 Int) -> V2 Int -> Bool
 isAMonsterAt ws w = all ((`S.member` ws) . (+w)) monsterCoords
 
 assemble :: [Piece] -> Puzzle
-assemble (p:ps) = snd $ iterate addPiece (em, M.singleton (V2 0 0) (trace' p)) !! (length ps' `quot` 8)
+assemble (p:ps) = snd $ iterate addPiece (em, M.singleton (V2 0 0) p) !! (length ps' `quot` 8)
     where em  = edgeMap ps'
           ps' = filter ((/=pId p) . pId) ps
 
 addPiece :: (Map Edge [Piece], Puzzle) -> (Map Edge [Piece], Puzzle)
-addPiece (em, pzl) = (em', trace (show $ M.map pId pzl') pzl')
+addPiece (em, pzl) = (em', pzl')
     where (pos, e) = chooseEdge em pzl         -- Choose an edge in the puzzle to find a piece for
           p        = pickPiece (pos, e) em pzl -- Pick out the piece for the chosen edge
           em'      = removePieceFrom p em      -- Remove piece from edgemap 
@@ -115,7 +112,7 @@ pickPiece (pos, (s,b)) em pzl = p'
           p'   = head ps'
 
 addPieceAt :: Point -> Edge -> Piece -> Puzzle -> Puzzle
-addPieceAt pos (s,_) p = M.insert pos' $ traceLabel "addPieceAt: " p
+addPieceAt pos (s,_) = M.insert pos'
     where pos' = pos + fromSide s
     
 
@@ -123,25 +120,24 @@ removePieceFrom :: Piece -> Map Edge [Piece] -> Map Edge [Piece]
 removePieceFrom p = M.map (filter ((/=pId p) . pId))
 
 chooseEdge :: Map Edge [Piece] -> Puzzle -> (Point, Edge)
-chooseEdge em pzl = traceLabel "chooseEdge: " $ (pos, head edges)
+chooseEdge em pzl = (pos, head edges)
     where es = danglingEdges em pzl
           (pos, edges) = head es
 
 danglingEdges :: Map Edge [Piece] -> Puzzle -> [(Point, [Edge])]
-danglingEdges em pzl = traceLabel "danglingEdges: " . M.toList . M.filter (not . null) . M.map (danglingEdges' placed em) $ pzl
+danglingEdges em pzl = M.toList . M.filter (not . null) . M.map (danglingEdges' placed em) $ pzl
     where placed = S.fromList $ M.elems $ M.map pId pzl
 
 danglingEdges' ::  Set PID  -> Map Edge [Piece] -> Piece -> [Edge]
-danglingEdges' placed em p = traceLabel "danglingEdges': " . S.toList $ S.filter (isJust . fitsWithARemainingPiece placed i em) $ pEdges p
-    where i = pId $ traceLabel "thisPiece: " p
+danglingEdges' placed em p = S.toList $ S.filter (isJust . fitsWithARemainingPiece placed i em) $ pEdges p
+    where i = pId p
 
 fitsWithARemainingPiece :: Set PID -> PID -> Map Edge [Piece] -> Edge -> Maybe Edge
 fitsWithARemainingPiece placed thisPID em (s,b) = do
     let e = (opp s, b)
     es <- em M.!? e
-    traceLabel "fitsWithAremainingPiece: " $
-        if any ((`S.notMember` placed') . pId) es then Just (s,b) else Nothing
-    where placed' = S.insert (traceLabel "thisPID: " thisPID) placed
+    if any ((`S.notMember` placed') . pId) es then Just (s,b) else Nothing
+    where placed' = S.insert thisPID placed
 
 rotCw90 :: [[a]] -> [[a]]
 rotCw90 = transpose . reverse
