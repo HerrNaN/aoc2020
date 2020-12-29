@@ -1,3 +1,5 @@
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE RecordWildCards #-}
 module Day22 where
 
 import qualified Text.Parsec as P
@@ -12,62 +14,63 @@ import Data.Functor
 import Control.Applicative
 import Parse
 import Common
-import Control.Monad.State.Strict (evalState, MonadState(put), modify, gets, State)
+import Control.Monad.State.Strict (withState, runState, evalState, MonadState(get, put), modify, gets, State)
 import Data.Sequence.Lens (viewL)
 import Control.Lens (set, over, _1, _2)
 import Control.Monad.Identity (Identity(Identity))
 import Data.List.Split (splitOn)
 import Data.Foldable (Foldable(toList))
+import Data.Maybe (isJust)
+import Debug.Trace (traceShow)
+import Control.Monad (guard)
 
-type CombatGame = State Decks Int
+data Player = P1 | P2
 type Decks = (Seq Int, Seq Int)
+type Deck = Seq Int
 
 day22a :: String -> Int
 day22a = solveA . dayInput
 
 solveA :: Decks -> Int
-solveA = evalState playGame
-
-winner :: Decks -> Maybe (Seq Int)
-winner (Empty, cs   ) = Just cs
-winner (cs   , Empty) = Just cs
-winner _ = Nothing
-
-playGame :: CombatGame
-playGame = do
-    wcs <- gets winner
-    case wcs of
-        Just cs -> return $ calculateScore cs
-        Nothing -> playRound
+solveA = calculateScore . snd . uncurry gameA
 
 calculateScore :: Seq Int -> Int
 calculateScore cs = sum $ zipWith (*) scoreCard $ toList cs
     where scoreCard = enumFromThen (length cs) (length cs - 1)
 
-playRound :: CombatGame
-playRound = do
-    (c,c') <- gets topCards
-    modify dropTopCards
-    modify (updateCards (c,c'))
-    playGame
-
-updateCards :: (Int, Int) -> (Seq Int, Seq Int) -> (Seq Int, Seq Int)
-updateCards (c,c') (cs,cs')
-    | c >  c' = (cs:|>c:|>c',cs')
-    | c' > c  = (cs, cs':|>c':|>c)
-    | otherwise = error "equal cards!"
-
-dropTopCards :: (Seq Int, Seq Int) -> (Seq Int, Seq Int)
-dropTopCards (_:<|cs, _:<|cs') = (cs,cs')
-
-topCards :: (Seq Int, Seq Int) -> (Int, Int)
-topCards (c:<|_, c':<|_) = (c,c')
-
 day22b :: String -> Int
 day22b = solveB . dayInput
 
 solveB :: Decks -> Int
-solveB = error "not implemented"
+solveB = calculateScore . snd . uncurry gameB
+
+gameA :: Deck -> Deck -> (Player, Deck)
+gameA = gameWith $ \_ _ -> Nothing 
+
+gameB :: Deck -> Deck -> (Player, Deck)
+gameB = gameWith $ \(x:<|xs) (y:<|ys) -> do
+    xs' <- takeExactly x xs
+    ys' <- takeExactly y ys
+    pure $ fst (gameB xs' ys')
+
+gameWith :: (Deck -> Deck -> Maybe Player) -> Deck -> Deck -> (Player, Deck)
+gameWith f = gameWith' f S.empty 
+
+gameWith' :: (Deck -> Deck -> Maybe Player) -> Set (Deck,Deck) -> Deck -> Deck -> (Player, Deck)
+gameWith' _ _    xs    Empty = (P1,xs)
+gameWith' _ _    Empty ys    = (P2,ys)
+gameWith' f seen d@(x:<|xs) d'@(y:<|ys)
+    | (d,d') `S.member` seen = (P1, d)
+    | otherwise = let winner = case f d d' of 
+                        Nothing -> if x > y then P1 else P2
+                        Just p  -> p
+                  in case winner of
+                    P1 -> gameWith' f seen' (xs:|>x:|>y) ys
+                    P2 -> gameWith' f seen' xs (ys:|>y:|>x)
+    where seen' = S.insert (d,d') seen
+
+takeExactly :: Int -> Seq a -> Maybe (Seq a)
+takeExactly n xs = Seq.take n xs <$ guard (Seq.length xs >= n) 
 
 dayInput :: String -> Decks
 dayInput input = (d1,d2)
