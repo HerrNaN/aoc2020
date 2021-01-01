@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 017af7369d25c0768e195f4f1796365173f6e082f448d6e3b1a6556942ae7686
+-- hash: 99f2f0db2bf27af94205bc90e74472b1081f121121c9cbb9f9d5d30b6baae466
 
 name:           aoc
 version:        0.1.0.0
@@ -45,6 +45,7 @@ library
       Day20
       Day21
       Day22
+      Day23
       Days
       DayXX
       Input
@@ -57,6 +58,7 @@ library
       advent-of-code-api
     , base >=4.7 && <5
     , containers
+    , data-clist
     , directory
     , either
     , http-conduit
@@ -103,6 +105,7 @@ executable aoc-exe
       Day20
       Day21
       Day22
+      Day23
       Days
       DayXX
       Input
@@ -117,6 +120,7 @@ executable aoc-exe
     , aoc
     , base >=4.7 && <5
     , containers
+    , data-clist
     , directory
     , either
     , http-conduit
@@ -163,6 +167,7 @@ executable bench
       Day20
       Day21
       Day22
+      Day23
       Days
       DayXX
       Input
@@ -178,6 +183,7 @@ executable bench
     , base >=4.7 && <5
     , containers
     , criterion
+    , data-clist
     , directory
     , either
     , http-conduit
@@ -225,6 +231,7 @@ test-suite aoc-test
       Day20
       Day21
       Day22
+      Day23
       Days
       DayXX
       Input
@@ -239,6 +246,7 @@ test-suite aoc-test
     , aoc
     , base >=4.7 && <5
     , containers
+    , data-clist
     , directory
     , either
     , hspec

@@ -51,7 +51,7 @@ days2020 = [  (1, show . day01a, show . day01b)
              ,(20,show . day20a, show . day20b)
              ,(21,show . day21a, show . day21b)
              ,(22,show . day22a, show . day22b)
-            --  ,(23,show . day23a, show . day23b)
+             ,(23,show . day23a, show . day23b)
             --  ,(24,show . day24a, show . day24b)
             --  ,(25,show . day25a, show . day25b)
              ]

@@ -39,6 +39,7 @@ dependencies:
 - regex-tdfa
 - regex-posix
 - regex-pcre
+- data-clist
 
 library:
   source-dirs: src
