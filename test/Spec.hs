@@ -93,9 +93,9 @@ tests = [
          ,(24,
             Just (show . day24a, "10" ),
             Just (show . day24b, "2208" ))
-        --  ,(25,
-        --     Just (show . day25a, "165" ),
-        --     Just (show . day25b, "208" ))
+         ,(25,
+            Just (show . day25a, "14897079" ),
+            Just (show . day25b, "208" ))
         ]
 
 -- | Runs the tests a given entry in the tests list.
